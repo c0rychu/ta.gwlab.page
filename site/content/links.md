@@ -16,7 +16,7 @@
 
 ## IPython Notebooks (Google Colab)
 
-- [Electrodynamics](https://colab.research.google.com/github/c0rychu/ta.gwlab.page/blob/main/ipynb/em.ipynb)
+- [IPython Notebook - Electrodynamics](https://colab.research.google.com/github/c0rychu/ta.gwlab.page/blob/main/ipynb/em.ipynb)
 
 ## Reference
 
