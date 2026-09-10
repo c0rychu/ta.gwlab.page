@@ -197,7 +197,12 @@ and have no source here to rebuild them from.
 | `rsvg-convert` | SVG → PDF (preferred, ~30× faster) | `brew install librsvg` |
 | `inkscape` | SVG → PDF fallback | `brew install --cask inkscape` |
 | project venv | the plotting scripts (matplotlib, physics-plot) | `uv sync` |
-| LuaLaTeX | exporting TikZ figures | already required for the notes |
+| a LaTeX install | **also** the plotting scripts — see below | already required for the notes |
+
+physics-plot sets `text.usetex`, so matplotlib typesets every axis label by shelling out
+to a real `latex` binary. That is what makes plot labels match the book's type exactly,
+but it means the plotting scripts need TeX on `PATH`, not just Python. `make fig` checks
+for it and says so plainly rather than failing with a matplotlib traceback.
 
 Plots share one look via [physics-plot](https://c0rychu.github.io/physics-plot/); each
 script starts with
@@ -210,9 +215,10 @@ which gives serif labels matching the book's type, and sets figure size and
 `savefig.dpi`. Swap `colors.ggplot` for `colors.colorblind` on any figure that needs
 more than a couple of distinguishable series.
 
-CI installs `librsvg2-bin` and runs `uv sync`, then builds `plots` and `svg` only — the
-TikZ exports are for reuse in slides and are not needed to typeset the notes, since the
-book `\input`s the `.tex`.
+CI installs `librsvg2-bin`, a minimal TeX (`texlive-latex-extra`, `cm-super`, `dvipng` —
+the last two are what matplotlib's `usetex` needs) and runs `uv sync`, then builds `plots`
+and `svg` only. The TikZ exports are for reuse in slides and are not needed to typeset the
+notes, since the book `\input`s the `.tex`.
 
 ### Cross-references
 

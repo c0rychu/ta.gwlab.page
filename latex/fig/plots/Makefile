@@ -20,6 +20,10 @@ SCRIPTS := $(filter-out _%,$(wildcard *.py))
 .PHONY: all clean
 all:
 	@[ -n "$(SCRIPTS)" ] || { echo "no figure scripts here yet"; exit 0; }; \
+	command -v latex >/dev/null 2>&1 || { \
+	  echo "no 'latex' on PATH — physics-plot sets text.usetex, so matplotlib"; \
+	  echo "typesets every label with a real LaTeX. Install TeX Live (or MacTeX)."; \
+	  exit 1; }; \
 	if [ -x $(PYTHON) ]; then py=$(PYTHON); \
 	elif command -v uv >/dev/null 2>&1; then py="uv run --group notebooks python"; \
 	else echo "need the project venv: uv sync --group notebooks"; exit 1; fi; \

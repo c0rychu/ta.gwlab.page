@@ -44,11 +44,21 @@ jobs:
       # in slides, and the book \inputs the .tex rather than including them — so
       # they are not needed to build the notes, which is just as well, since
       # LuaLaTeX lives in the latex-action container rather than on this runner.
+      # The plotting scripts need a real LaTeX on this runner, not just in the
+      # latex-action container that runs later: physics-plot's pp_base sets
+      # text.usetex, so matplotlib shells out to `latex` for every label.
+      #   type1cm      - required by matplotlib's own usetex preamble
+      #   cm-super     - Type1 CM fonts, so output is vector rather than bitmap
+      #   dvipng       - how the Agg backend rasterises, for the PNG figure
+      # librsvg2-bin provides rsvg-convert for the SVG figures.
       - name: Generate figures
         if: hashFiles('latex/fig/**') != ''
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq librsvg2-bin
+          sudo apt-get install -y -qq --no-install-recommends \
+            librsvg2-bin \
+            texlive-latex-base texlive-latex-recommended texlive-latex-extra \
+            texlive-fonts-recommended cm-super dvipng
           uv sync
           make -C latex/fig plots svg
 
