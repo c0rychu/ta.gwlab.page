@@ -1,0 +1,67 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+
+      - name: Cache tailwind binary
+        uses: actions/cache@v6
+        with:
+          path: .tools
+          key: tailwind-${{ runner.os }}-${{ hashFiles('Makefile') }}
+
+      - name: Build site
+        run: make site
+
+      # Self-activating: does nothing until a latex/ directory with .tex files
+      # appears, then builds the PDFs into dist/notes/ with no further setup.
+      - name: Build LaTeX PDFs
+        if: hashFiles('latex/**/*.tex') != ''
+        uses: xu-cheng/latex-action@v4
+        with:
+          working_directory: latex
+          root_file: "*.tex"   # each top-level .tex in latex/ is a document root
+
+      - name: Collect PDFs
+        if: hashFiles('latex/**/*.tex') != ''
+        run: |
+          mkdir -p dist/notes
+          find latex -maxdepth 1 -name '*.pdf' -exec mv {} dist/notes/ \;
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

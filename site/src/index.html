@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TA Tools</title>
+<meta name="description" content="Classroom tools: quick links, countdown timer, random picker, blackout screen.">
+<link rel="icon" href="favicon.svg">
+<link rel="stylesheet" href="assets/app.css">
+</head>
+<body class="flex h-full flex-col bg-slate-950 text-slate-100 antialiased">
+
+<header id="chrome" class="border-b border-slate-800">
+  <nav class="mx-auto flex max-w-5xl flex-wrap gap-1 px-4 py-3" aria-label="Tools">
+    <a href="#home"   data-tab="home"   class="tab">Home</a>
+    <a href="#timer"  data-tab="timer"  class="tab">Timer</a>
+    <a href="#picker" data-tab="picker" class="tab">Picker</a>
+    <a href="#black"  data-tab="black"  class="tab">Black Screen</a>
+  </nav>
+</header>
+
+<main class="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 py-6">
+
+  <!-- Home: quick links, generated from site/content/links.md -->
+  <section id="panel-home" class="panel flex-1 flex-col">
+    <input id="home-filter" class="field mb-6 w-full" placeholder="Filter links…" autocomplete="off" aria-label="Filter links">
+    <div id="home-content" class="md">
+{{LINKS}}
+    </div>
+    <p id="home-empty" class="hidden py-8 text-center text-slate-500">No links match that filter.</p>
+  </section>
+
+  <!-- Timer -->
+  <section id="panel-timer" class="panel flex-1 flex-col items-center justify-center gap-8">
+    <div id="clock" class="font-mono text-[clamp(3.5rem,19vw,15rem)] font-bold leading-none tabular-nums">10:00</div>
+
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <button id="t-toggle" class="btn btn-primary min-w-32 text-lg">Start</button>
+      <button id="t-reset" class="btn">Reset</button>
+      <button data-delta="-300" class="btn t-delta">&minus;5 min</button>
+      <button data-delta="300" class="btn t-delta">+5 min</button>
+    </div>
+
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <span class="text-sm text-slate-400">Presets</span>
+      <button data-preset="60" class="btn t-preset">1</button>
+      <button data-preset="300" class="btn t-preset">5</button>
+      <button data-preset="600" class="btn t-preset">10</button>
+      <button data-preset="900" class="btn t-preset">15</button>
+      <form id="t-form" class="ml-2 flex items-center gap-2">
+        <label for="t-input" class="text-sm text-slate-400">Set</label>
+        <input id="t-input" class="field w-28 text-center" placeholder="7:30" autocomplete="off"
+               aria-label="Set timer, e.g. 10, 7:30 or 90s">
+        <button class="btn">Go</button>
+      </form>
+    </div>
+    <p class="text-sm text-slate-500">Space starts and pauses. Accepts <code>10</code>, <code>7:30</code> or <code>90s</code>.</p>
+  </section>
+
+  <!-- Picker: random student / number -->
+  <section id="panel-picker" class="panel flex-1 flex-col items-center justify-center gap-8">
+    <div id="die" class="font-mono text-[clamp(3.5rem,19vw,15rem)] font-bold leading-none tabular-nums text-slate-600">&ndash;</div>
+
+    <div class="flex flex-wrap items-center justify-center gap-2">
+      <button id="p-pick" class="btn btn-primary min-w-32 text-lg">Pick</button>
+      <label for="p-max" class="text-sm text-slate-400">1 to</label>
+      <input id="p-max" type="number" min="1" max="9999" value="30" class="field w-24 text-center">
+      <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-300">
+        <input id="p-norepeat" type="checkbox" class="size-4 accent-sky-500"> no repeats
+      </label>
+      <button id="p-reset" class="btn">Clear</button>
+    </div>
+
+    <div class="min-h-16 w-full max-w-3xl">
+      <div id="p-picked" class="flex flex-wrap justify-center gap-1.5"></div>
+      <p id="p-note" class="mt-2 text-center text-sm text-slate-500"></p>
+      <p class="mt-1 text-center text-sm text-slate-500">Picks a random number from 1 to N — for calling on students.</p>
+    </div>
+  </section>
+
+
+</main>
+
+<footer id="foot" class="border-t border-slate-800 px-4 py-3 text-center text-xs text-slate-600">
+  built {{BUILD_DATE}}
+</footer>
+
+<!-- Blackout: covers everything, including the header -->
+<div id="blackout" class="fixed inset-0 z-50 bg-black">
+  <div id="black-hint" class="flex h-full flex-col items-center justify-center gap-4 text-slate-700 transition-opacity duration-150">
+    <p class="text-sm">Click anywhere or press <kbd class="kbd">Esc</kbd> to exit</p>
+    <button id="black-full" class="btn">Fullscreen</button>
+    <p class="text-xs text-slate-800">This text hides once the mouse stops moving, and returns when it moves again.</p>
+  </div>
+</div>
+
+<script src="assets/app.js"></script>
+</body>
+</html>
