@@ -17,6 +17,10 @@ the one you open most.
 Edit `site/content/links.md` and push. That is the whole workflow — CI rebuilds and
 redeploys. It is ordinary markdown: `## Heading` starts a section, each `- [Title](URL)`
 is a link, and any text after the link on the same line becomes the grey description.
+Indent a `-` under another to nest it (any indent works), and fenced ` ```python `
+blocks render as code. Rendering is CommonMark via
+[markdown-it-py](https://markdown-it-py.readthedocs.io/), so what GitHub shows you in
+the file preview is what the page will look like.
 
 To link a notebook, commit it under `ipynb/` and prefix its path with the Colab base:
 

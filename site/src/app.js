@@ -333,20 +333,56 @@
 
   const filter = $("#home-filter");
 
+  // links.md is ordinary markdown, so a section can hold prose or a code block
+  // as well as a link list. Group the rendered output into "heading + everything
+  // until the next heading" once, and filter section by section.
+  const sections = (() => {
+    const out = [];
+    let current = null;
+    for (const el of $("#home-content").children) {
+      if (/^H[1-6]$/.test(el.tagName)) out.push((current = { heading: el, blocks: [] }));
+      else if (current) current.blocks.push(el);
+      else out.push((current = { heading: null, blocks: [el] }));
+    }
+    return out;
+  })();
+
   filter.addEventListener("input", () => {
     const q = filter.value.trim().toLowerCase();
-    let visible = 0;
-    for (const item of document.querySelectorAll("#home-content li")) {
-      const hit = !q || item.textContent.toLowerCase().includes(q);
-      item.hidden = !hit;
-      if (hit) visible++;
+    const matches = (el) => el.textContent.toLowerCase().includes(q);
+    let anyVisible = false;
+
+    for (const { heading, blocks } of sections) {
+      // A hit on the heading keeps the whole section, so searching for a topic
+      // shows everything filed under it rather than a lone matching line.
+      const wholeSection = !q || (heading !== null && matches(heading));
+      let sectionVisible = wholeSection;
+
+      for (const block of blocks) {
+        const items = /^[UO]L$/.test(block.tagName) ? [...block.children] : [];
+        if (items.length) {
+          let anyItem = false;
+          for (const li of items) {
+            const hit = wholeSection || matches(li);
+            li.hidden = !hit;
+            anyItem ||= hit;
+          }
+          block.hidden = !anyItem;
+          sectionVisible ||= anyItem;
+        } else {
+          const hit = wholeSection || matches(block);
+          block.hidden = !hit;
+          sectionVisible ||= hit;
+        }
+      }
+
+      // A heading with no blocks of its own is a title, not a filterable
+      // section, so it stays on screen while you search.
+      if (heading && blocks.length) heading.hidden = !sectionVisible;
+      anyVisible ||= sectionVisible;
     }
-    // Hide a section heading whose items all filtered out.
-    for (const heading of document.querySelectorAll("#home-content h2")) {
-      const list = heading.nextElementSibling;
-      heading.hidden = !!q && !!list && [...list.children].every((li) => li.hidden);
-    }
-    $("#home-empty").classList.toggle("hidden", visible > 0);
+
+    $("#home-empty").classList.toggle("hidden", anyVisible);
   });
 
   /* ------------------------------------------------------------ keyboard -- */

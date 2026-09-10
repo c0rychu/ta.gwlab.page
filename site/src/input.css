@@ -41,19 +41,52 @@
 }
 
 /* Rendered markdown (Links tab). */
+/* A single `# Title` at the top of links.md is the course title — Tailwind's
+   preflight unstyles headings, so every level needs an explicit rule. */
+.md h1 { @apply mb-6 text-xl font-semibold text-slate-100; }
 .md h2 {
   @apply mt-8 mb-3 border-b border-slate-800 pb-1 text-xs font-semibold
          tracking-widest text-slate-500 uppercase first:mt-0;
 }
-.md ul { @apply space-y-1; }
+/* Preflight strips list markers, so bullets and numbers are set explicitly.
+   pl-6 leaves room for the marker, which sits outside the content box and so
+   stays put when a long link wraps. Nested lists inherit these rules and
+   indent one more level, changing marker shape as they go. */
+.md ul { @apply list-disc space-y-1 pl-6; }
+.md ol { @apply list-decimal space-y-1 pl-6; }
+.md ul ul { @apply list-[circle]; }
+.md ul ul ul { @apply list-[square]; }
+.md li > ul,
+.md li > ol { @apply mt-1; }
 .md li { @apply text-sm text-slate-400; }
+.md li::marker { @apply text-slate-600; }
+
+/* The negative margin cancels the padding for layout, so link text lines up
+   with the bullet while the hover background still extends past it. */
 .md a {
-  @apply inline-block rounded px-2 py-1.5 font-medium text-sky-400
+  @apply -mx-1 inline-block rounded px-1 py-1 font-medium text-sky-400
          hover:bg-slate-800 hover:text-sky-300;
 }
 .md a::after { content: " ↗"; @apply text-xs text-slate-600; }
+.md h3 { @apply mt-5 mb-2 text-sm font-semibold text-slate-300; }
+.md ol { @apply list-inside list-decimal space-y-1; }
 .md p { @apply text-sm text-slate-400; }
+.md strong { @apply font-semibold text-slate-300; }
+
+/* Inline code. */
 .md code { @apply rounded bg-slate-800 px-1 font-mono text-xs; }
+
+/* Fenced code blocks. Long lines scroll inside the block instead of widening
+   the page, and the inner <code> drops the inline pill styling above. */
+.md pre {
+  @apply my-4 overflow-x-auto rounded-lg border border-slate-800 bg-slate-900/70
+         p-4 text-sm leading-relaxed text-slate-200;
+}
+.md pre code {
+  @apply rounded-none bg-transparent p-0;
+  font-size: inherit;
+  line-height: inherit;
+}
 
 /* Timer hits zero: unmissable from the back of the room, no sound needed. */
 @keyframes alarm { 50% { opacity: 0.15; } }

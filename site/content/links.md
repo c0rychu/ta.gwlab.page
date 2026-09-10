@@ -2,6 +2,7 @@
   Edit this file, run `make site` (or just push to main) and the Home tab updates.
   Plain markdown: `## Heading` starts a section, each `- [Title](URL)` is a link.
   Text after a link on the same line becomes the grey description.
+  Indent a `-` under another to nest it — two spaces or four, whichever you like.
 
   Colab recipe — take a notebook committed under ipynb/ and prefix its path with
   https://colab.research.google.com/github/c0rychu/ta.gwlab.page/blob/main/
@@ -21,8 +22,9 @@
 ## Reference
 
 - [Textbook](https://faculty.cengage.com/works/9780357976425)
-- [Astropy - Constants](https://docs.astropy.org/en/latest/constants/index.html#module-astropy.constants)
-- [Astropy - Units](https://docs.astropy.org/en/latest/units/ref_api.html#module-astropy.units.si)
+- Astropy
+  - [Astropy - Constants](https://docs.astropy.org/en/latest/constants/index.html#module-astropy.constants)
+  - [Astropy - Units](https://docs.astropy.org/en/latest/units/ref_api.html#module-astropy.units.si)
 
 
 ## Cheat Sheets

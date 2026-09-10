@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["markdown>=3.6"]
+# dependencies = ["markdown-it-py>=3.0", "linkify-it-py>=2.0"]
 # ///
 """Build the static site into dist/.
 
@@ -16,7 +16,7 @@ import shutil
 from datetime import date
 from pathlib import Path
 
-import markdown
+from markdown_it import MarkdownIt
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
@@ -27,9 +27,14 @@ DIST = ROOT / "dist"
 LINK_ATTRS = ' target="_blank" rel="noopener noreferrer"'
 
 
+# CommonMark, so the file renders exactly as GitHub previews it — in particular
+# nested lists work at any indent, which Python-Markdown silently flattened at
+# two spaces. "gfm-like" adds tables, strikethrough and bare-URL autolinking.
+MD = MarkdownIt("gfm-like")
+
+
 def render_markdown(path: Path) -> str:
-    md = markdown.Markdown(extensions=["extra", "sane_lists", "attr_list"])
-    html = md.convert(path.read_text(encoding="utf-8"))
+    html = MD.render(path.read_text(encoding="utf-8"))
     html = re.sub(r"<!--.*?-->", "", html, flags=re.DOTALL)  # editing notes stay in the source
     return re.sub(r"<a (?![^>]*\btarget=)", f"<a{LINK_ATTRS} ", html)
 
