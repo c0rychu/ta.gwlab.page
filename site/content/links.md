@@ -8,7 +8,7 @@
   https://colab.research.google.com/github/c0rychu/ta.gwlab.page/blob/main/
 -->
 
-# PHYSICS 122 - General Physics 2 (Non-Calculus)
+# PHYSICS 122 - General Physics II (Non-Calculus)
 ## Canvas
 
 - [Lecture (Section 402)](https://uws.instructure.com/courses/858330)
