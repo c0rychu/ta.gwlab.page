@@ -1,0 +1,4 @@
+# Generated from the .svg sources here — regenerate with `make`
+# (needs rsvg-convert or inkscape). The .svg files themselves are the source
+# and stay committed.
+*.pdf

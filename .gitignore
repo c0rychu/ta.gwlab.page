@@ -10,6 +10,14 @@ dist/
 # Generated PDFs never live in the repo (force one in with `git add -f` if ever needed)
 *.pdf
 
+# Generated figures are not committed either — each latex/fig/ subdirectory has
+# its own .gitignore for its output, and `make fig` regenerates them. Artwork in
+# latex/fig/others/ IS committed: it comes from elsewhere and has no source here.
+!latex/fig/others/*.pdf
+
+# Scratch space for experiments — never part of a build
+scratch/
+
 # LaTeX build junk
 *.aux
 *.fdb_latexmk
@@ -18,6 +26,20 @@ dist/
 *.out
 *.synctex.gz
 *.toc
+*.bbl
+*.bcf
+*.blg
+*.run.xml
+# biber leaves this behind when a run is interrupted
+*.bcf-SAVE-ERROR
+*.xdv
+*.lof
+*.lot
+
+# minted 3 writes these next to the document, named after a hash of it
+*.minted
+_minted*/
+
 
 # OS / editor
 .DS_Store

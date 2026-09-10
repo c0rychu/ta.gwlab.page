@@ -1,0 +1,45 @@
+% Whole-book root. This file owns the preamble; every chapter in chapters/ is
+% a subfile that pulls this preamble in, so a chapter can be compiled on its
+% own and still look identical to its pages here.
+%
+%   make latex                  build this plus every chapter
+%   make latex CH=ch01-fields   build one chapter only
+%
+% Swap the typeface with \documentclass[charter]{gwbook}; print on US Letter
+% with \documentclass[letterpaper]{gwbook}.
+
+\documentclass{gwbook}
+
+\usepackage{subfiles}
+
+% \subfix keeps this path correct both here and when a chapter in chapters/ is
+% compiled directly -- without it the standalone build looks for
+% chapters/refs.bib and silently finds no bibliography.
+\addbibresource{\subfix{refs.bib}}
+
+\title{Notes on General Physics II}
+\subtitle{Electricity, Magnetism and Optics}
+\author{Cory Chu}
+\date{\today}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\tableofcontents
+
+\mainmatter
+% Chapter order lives here and nowhere else -- reordering is a matter of moving
+% these lines. The parenthesised numbers are the corresponding textbook Topics.
+\subfile{chapters/ch01-electrostatics}          % 15, 16
+\subfile{chapters/ch02-dc-circuits}             % 17, 18
+\subfile{chapters/ch03-magnetostatics}          % 19
+\subfile{chapters/ch04-electrodynamics}         % 20
+\subfile{chapters/ch05-ac-circuits-em-waves}    % 21
+\subfile{chapters/ch06-geometric-optics}        % 22, 23
+\subfile{chapters/ch07-wave-optics}             % 24
+
+\backmatter
+\bookbib
+
+\end{document}

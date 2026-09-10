@@ -869,6 +869,15 @@ wheels = [
 ]
 
 [[package]]
+name = "physics-plot"
+version = "0.2.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2f/43/cb46b6061c67d6338ae11e990122d8f3da68434637d73bfdf5b98f230c35/physics_plot-0.2.3.tar.gz", hash = "sha256:0f84e2d7492c1e74135acec10dfc74a0ddf77b36e5409f32fae7344aaf8db5fc", size = 3679, upload-time = "2025-10-21T00:08:03.348Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/a1/e5d420e557ac8c922d2ab45c69ec30ad711b35be7a3b961e8505509b240a/physics_plot-0.2.3-py3-none-any.whl", hash = "sha256:272bb757f17e346301ccbaa1ad69b47893d4fa5bdae637957433309dc331832b", size = 5412, upload-time = "2025-10-21T00:08:02.579Z" },
+]
+
+[[package]]
 name = "pillow"
 version = "12.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1232,6 +1241,7 @@ dev = [
     { name = "matplotlib" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "physics-plot" },
 ]
 notebooks = [
     { name = "astropy" },
@@ -1239,6 +1249,7 @@ notebooks = [
     { name = "matplotlib" },
     { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "physics-plot" },
 ]
 
 [package.metadata]
@@ -1249,12 +1260,14 @@ dev = [
     { name = "ipykernel" },
     { name = "matplotlib" },
     { name = "numpy" },
+    { name = "physics-plot" },
 ]
 notebooks = [
     { name = "astropy" },
     { name = "ipykernel" },
     { name = "matplotlib" },
     { name = "numpy" },
+    { name = "physics-plot" },
 ]
 
 [[package]]

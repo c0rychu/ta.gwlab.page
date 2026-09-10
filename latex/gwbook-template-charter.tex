@@ -1,0 +1,20 @@
+%% gwbook-template-charter.tex -- the same feature reference in the alternate typeface.
+%%
+%% Identical to template.tex apart from the [charter] class option; the content
+%% is shared via include/gwbook-template-body.tex. Keeping both means you can compare
+%% the two faces on real material rather than on a specimen page.
+%%
+%% Builds to dist/notes/gwbook-template-charter.pdf.
+
+\documentclass[charter]{gwbook}
+\addbibresource{refs.bib}
+
+\title{Using \texttt{gwbook}}
+\subtitle{A reference for the class's environments and commands\\[4pt]
+          \normalsize Set in XCharter --- the \texttt{[charter]} option}
+\author{}
+\date{}
+
+\begin{document}
+\input{include/gwbook-template-body}
+\end{document}

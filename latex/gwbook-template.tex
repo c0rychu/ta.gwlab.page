@@ -1,0 +1,20 @@
+%% gwbook-template.tex -- feature reference for gwbook.cls, in the default typeface.
+%%
+%% A standalone document (not part of book.tex). The content lives in
+%% include/gwbook-template-body.tex and is shared with gwbook-template-charter.tex, so the
+%% two differ only in the class option on the line below.
+%%
+%% Builds to dist/notes/gwbook-template.pdf.
+
+\documentclass{gwbook}
+\addbibresource{refs.bib}
+
+\title{Using \texttt{gwbook}}
+\subtitle{A reference for the class's environments and commands\\[4pt]
+          \normalsize Set in TeX Gyre Schola --- the default}
+\author{}
+\date{}
+
+\begin{document}
+\input{include/gwbook-template-body}
+\end{document}

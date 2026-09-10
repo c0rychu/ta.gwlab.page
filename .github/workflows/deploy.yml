@@ -39,20 +39,64 @@ jobs:
       - name: Build site
         run: make site
 
+      # Generated figures are not committed, so they are rebuilt here before the
+      # document is typeset. Only plots and svg: the TikZ exports exist for reuse
+      # in slides, and the book \inputs the .tex rather than including them — so
+      # they are not needed to build the notes, which is just as well, since
+      # LuaLaTeX lives in the latex-action container rather than on this runner.
+      - name: Generate figures
+        if: hashFiles('latex/fig/**') != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq librsvg2-bin
+          uv sync
+          make -C latex/fig plots svg
+
       # Self-activating: does nothing until a latex/ directory with .tex files
       # appears, then builds the PDFs into dist/notes/ with no further setup.
+      #
+      # -pdflua is required (gwbook.cls uses fontspec/unicode-math) and is given
+      # explicitly rather than via latexmk_use_lualatex, which works by rewriting
+      # "-pdf" inside args and would mangle an explicit "-pdflua".
+      # -cd makes latexmk enter each file's own directory, which is what lets a
+      # chapter subfile resolve ../book.tex.
+      # No -shell-escape: minted's latexminted helper is whitelisted under
+      # restricted shell escape, so highlighting works without it.
       - name: Build LaTeX PDFs
         if: hashFiles('latex/**/*.tex') != ''
         uses: xu-cheng/latex-action@v4
         with:
           working_directory: latex
-          root_file: "*.tex"   # each top-level .tex in latex/ is a document root
+          # Mirrors the Makefile's glob: every top-level .tex in latex/ is a
+          # document root (book.tex and the two template variants), plus every
+          # chapter. Shared fragments live in latex/include/, which is not
+          # globbed, so they are never compiled on their own. book.tex sorts
+          # first, which matters -- the chapters read its .aux for
+          # cross-chapter references.
+          root_file: |
+            *.tex
+            chapters/*.tex
+          args: -cd -pdflua -file-line-error -halt-on-error -interaction=nonstopmode
 
+      # Only the directories holding document roots are collected. A blanket
+      # -maxdepth 2 would also sweep up latex/fig/*.pdf, which is committed
+      # source artwork rather than build output.
       - name: Collect PDFs
         if: hashFiles('latex/**/*.tex') != ''
         run: |
           mkdir -p dist/notes
           find latex -maxdepth 1 -name '*.pdf' -exec mv {} dist/notes/ \;
+          find latex/chapters -maxdepth 1 -name '*.pdf' -exec mv {} dist/notes/ \;
+
+      # minted 3 needs two passes and degrades silently to a red "<MINTED>"
+      # placeholder if it only gets one, still exiting 0. Without this the site
+      # would publish unhighlighted listings and nothing would have failed.
+      - name: Verify listings were highlighted
+        if: hashFiles('latex/**/*.tex') != ''
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          make latex-check
 
       - uses: actions/upload-pages-artifact@v5
         with:

@@ -1,0 +1,350 @@
+%% Shared body of the gwbook feature reference.
+%%
+%% Not a document root -- it is \input by gwbook-template.tex and gwbook-template-charter.tex,
+%% which supply the \documentclass and differ only in the typeface. It lives in
+%% include/ because `make latex` treats every top-level .tex in latex/ as a root
+%% and would otherwise try to compile this on its own.
+
+\maketitle
+\tableofcontents
+
+\chapter{Reference}
+\label{ch:reference}
+
+Everything below is live: each example is typeset by the same class the notes
+use, so what you see is what a chapter will look like.
+
+% \mbox keeps these filenames off a line break. Broken across lines they still
+% render correctly, but a reader copying one out of the PDF can lose the hyphen.
+This reference is published twice from one source, once in each typeface the
+class offers --- \mbox{\texttt{gwbook-template.pdf}} in TeX Gyre Schola and
+\mbox{\texttt{gwbook-template-charter.pdf}} in XCharter. Open them side by side to choose
+between them on real material rather than on a specimen page; the title block
+of each says which you are reading.
+
+\section{Starting a chapter}
+
+Chapters live in \texttt{chapters/} and are \emph{subfiles} --- each is a
+complete document in its own right, so it can be compiled alone. Copy this
+skeleton, then add one \verb|\subfile{}| line to \texttt{book.tex}:
+
+\begin{minted}{latex}
+\documentclass[../book.tex]{subfiles}
+\IfFileExists{../book.aux}{\externaldocument{../book}}{}
+
+\begin{document}
+\chapter{Magnetostatics}
+\label{ch:magnetostatics}
+
+Text goes here.
+
+\chapterbib
+\end{document}
+\end{minted}
+
+\noindent
+The \verb|\IfFileExists| line lets references into \emph{other} chapters
+resolve when this chapter is built on its own. \verb|\chapterbib| prints the
+chapter's reference list and does nothing if the chapter cites nothing.
+
+\section{Boxed equations}
+
+\verb|keyeq| is a numbered display equation in a box --- for the handful of
+results a reader should be able to find by flicking through.
+
+\begin{minted}{latex}
+\begin{keyeq}
+  \label{eq:gauss}
+  \oint_{S} \vec{E} \cdot d\vec{A} \;=\; \frac{Q_{\mathrm{enc}}}{\varepsilon_0}
+\end{keyeq}
+\end{minted}
+
+\begin{keyeq}
+  \label{eq:gauss}
+  \oint_{S} \vec{E} \cdot d\vec{A} \;=\; \frac{Q_{\mathrm{enc}}}{\varepsilon_0}
+\end{keyeq}
+
+\noindent
+There are two variants: \verb|keyeq*| for an unnumbered one, and
+\verb|keyalign| when several lines belong in the same box.
+
+\begin{keyalign}
+  \nabla \cdot \vec{E} &= \frac{\rho}{\varepsilon_0} \\
+  \nabla \cdot \vec{B} &= 0
+\end{keyalign}
+
+\section{Theorem-like boxes}
+
+Four environments share one appearance and differ only in their label:
+\verb|theorem|, \verb|definition|, \verb|example| and \verb|remark|. Each takes
+an optional title and is numbered within the chapter.
+
+\begin{minted}{latex}
+\begin{definition}[Electric field]
+\label{def:efield}
+The field is the force per unit charge on a test charge, in the limit that the
+test charge is small enough not to disturb the sources.
+\end{definition}
+\end{minted}
+
+\begin{definition}[Electric field]
+\label{def:efield}
+The field is the force per unit charge on a test charge, in the limit that the
+test charge is small enough not to disturb the sources.
+\end{definition}
+
+\begin{example}[Uniformly charged sphere]
+For $r<R$ the enclosed charge is $Qr^{3}/R^{3}$, so $E = Qr/4\pi\varepsilon_0R^{3}$
+--- linear in $r$, and matching the exterior field exactly at $r=R$.
+\end{example}
+
+\begin{remark}
+The title is optional. Without it you get just ``Remark 1.3''.
+\end{remark}
+
+\noindent
+\verb|gwbox| is the same frame with a free-text title and no number, for
+anything that is not a numbered statement:
+
+\begin{gwbox}[A caution worth boxing]
+Use this for asides that need to stand out but should not be numbered or
+cross-referenced.
+\end{gwbox}
+
+\section{Code listings}
+
+\verb|code| takes the language as an argument. Add \verb|[linenos]| when you
+want to refer to particular lines in the prose.
+
+\begin{minted}{latex}
+\begin{code}{python}
+def flux(radius, charge):
+    return charge / EPS0
+\end{code}
+
+\begin{code}[linenos]{python}
+...
+\end{code}
+\end{minted}
+
+\begin{code}[linenos]{python}
+import numpy as np
+
+def flux(radius, charge, eps0=8.8541878128e-12):
+    """Total electric flux through a sphere enclosing `charge`."""
+    area = 4.0 * np.pi * radius**2
+    field = charge / (4.0 * np.pi * eps0 * radius**2)
+    return field * area          # -> charge / eps0, independent of radius
+\end{code}
+
+\noindent
+Listings are built to survive being copied out of the PDF: indentation is
+preserved, and the line numbers are excluded from text extraction, so pasting
+the block above into an editor gives runnable Python. For a fragment inside a
+sentence use \verb|\cd|, as in \cd{np.pi} or \cd{--shell-escape}.
+
+Any language Pygments knows will work: \mintinline{text}{python}, \mintinline{text}{c},
+\mintinline{text}{bash}, \mintinline{text}{latex}, \mintinline{text}{json}, and so on.
+
+\section{Figures}
+
+Artwork lives in \texttt{latex/fig/}, sorted by how it is made. Each
+subdirectory is self-contained --- a source and the output built from it sit
+together --- and each has its own small \texttt{Makefile}:
+
+\begin{minted}{text}
+latex/fig/plots/    plotting scripts  + the PDF/PNG they write
+          svg/      SVG sources       + the PDF converted from them
+          tikz/     TikZ sources      + one exported PDF each
+          others/   figures from anywhere else; nothing to build
+\end{minted}
+
+\noindent
+You never write any of those directory names. All four are on the class's
+\verb|\graphicspath|, so \verb|\includegraphics| takes a bare filename and does
+not care which one a figure sits in --- move a file between them and nothing
+needs editing. (The corollary: filenames must be unique across the four.) Each
+is registered twice, because \texttt{book.tex} compiles from \texttt{latex/}
+while a standalone chapter compiles one level down.
+
+Only sources are committed --- each subdirectory gitignores its own output ---
+so run \verb|make fig| after a fresh clone as well as after changing a figure.
+\verb|make latex| stops with a reminder if you forget, and CI regenerates them
+before typesetting. Each subdirectory's own \texttt{Makefile} rebuilds just that
+kind, and none of them names individual files, so adding a figure means dropping
+in a source and nothing else.
+
+Every figure shipped with this reference is named
+\texttt{gwbook-template-\ldots}, so the demo material is easy to pick out and
+delete once the notes have figures of their own.
+
+\subsection{Vector and raster images}
+
+PDF, PNG and JPG all go in through \verb|\includegraphics|. Prefer PDF for
+anything drawn or plotted --- it stays sharp at any zoom --- and reserve PNG for
+genuine raster content such as a screenshot or a photograph.
+
+Plots share one look through
+\href{https://c0rychu.github.io/physics-plot/}{physics-plot}; each script opens
+with
+
+\begin{minted}{python}
+plt.style.use(["physics_plot.pp_base", "physics_plot.colors.ggplot"])
+\end{minted}
+
+\noindent
+which is why the axis labels below are set in a serif that matches the body
+text rather than in matplotlib's default sans.
+
+\begin{minted}{latex}
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.78\textwidth]
+                  {gwbook-template-sphere-field.pdf}
+  \caption{Field of a uniformly charged sphere.}
+  \label{fig:sphere-field}
+\end{figure}
+\end{minted}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.78\textwidth]{gwbook-template-sphere-field.pdf}
+  \caption{Field of a uniformly charged sphere: linear inside, inverse-square
+  outside, continuous at $r=R$. Drawn by a script in \texttt{fig/plots/} and saved as
+  PDF, so it is resolution-independent.}
+  \label{fig:sphere-field}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.78\textwidth]{gwbook-template-rc-discharge.png}
+  \caption{A sibling script writing PNG instead, purely to exercise the raster
+  path. Use raster only when the content really is raster.}
+  \label{fig:rc}
+\end{figure}
+
+\subsection{TikZ figures}
+
+Diagrams drawn in \TeX{} live in \texttt{fig/tikz/} as files containing a single
+\verb|tikzpicture| and no preamble, and are pulled in with \verb|\tikzfig|. They
+inherit the document's fonts, so the labels match the surrounding text exactly
+--- which no exported image can do.
+
+\verb|make fig| also exports each figure to its own tight-cropped PDF alongside
+its source, so the same drawing can go into slides or a poster without being
+redrawn. Those exports are committed. The book does not use them --- it
+\verb|\input|s the \texttt{.tex}, which is what lets a figure follow the
+document's typeface even when the book is built with the \texttt{[charter]}
+option. The \texttt{.tex} is the source; the PDF is an export of it.
+
+\begin{minted}{latex}
+\begin{figure}[htbp]
+  \centering
+  \tikzfig{gwbook-template-gauss-sphere.tex}
+  \caption{A Gaussian surface around a point charge.}
+  \label{fig:gauss}
+\end{figure}
+\end{minted}
+
+\begin{figure}[htbp]
+  \centering
+  \tikzfig{gwbook-template-gauss-sphere.tex}
+  \caption{A Gaussian surface around a point charge. Compare the label
+  typeface with the body text --- it is the same font, because the figure is
+  typeset rather than imported.}
+  \label{fig:gauss}
+\end{figure}
+
+\subsection{SVG figures}
+
+\LaTeX{} cannot read SVG directly, and the package that appears to fix this
+shells out to Inkscape mid-compile, which the build deliberately does not allow.
+Convert once instead, and commit both files:
+
+\begin{minted}{bash}
+make fig     # latex/fig/*.svg  ->  latex/fig/*.pdf
+\end{minted}
+
+\noindent
+Then include the \texttt{.pdf} as usual. The \texttt{.svg} stays in the
+repository as the editable original; the generated \texttt{.pdf} is committed
+too, since the CI runner has no converter and must typeset what it is given.
+\autoref{fig:damped} came through this route.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.78\textwidth]{gwbook-template-damped.pdf}
+  \caption{Charge on a capacitor in a damped \textit{RLC} circuit. Authored as
+  SVG, converted once to PDF by \texttt{make fig}, and included like any other
+  vector figure.}
+  \label{fig:damped}
+\end{figure}
+
+\subsection{Referring to a figure}
+
+Give every figure a \verb|\label| and refer to it with \verb|\autoref|, never a
+bare ``see the figure below'' --- floats move. \autoref{fig:sphere-field},
+\autoref{fig:rc} and \autoref{fig:gauss} are all links.
+
+\section{Cross-references}
+
+Label anything, then refer to it with \verb|\autoref| --- which makes the whole
+phrase a link, where \verb|\ref| would link only the numeral.
+
+\begin{minted}{latex}
+\autoref{ch:reference}   % -> Chapter 1
+\autoref{eq:gauss}       % -> Eq. 1.1
+\autoref{def:efield}     % -> Definition 1.1
+\end{minted}
+
+\noindent
+Which renders as: \autoref{ch:reference}, \autoref{eq:gauss},
+\autoref{def:efield}. All three are clickable, as are the table of contents and
+every citation.
+
+Citations use Physical Review style automatically --- numeric labels, journal
+abbreviations, no article titles~\cite{Jackson1998,Feynman1949}. Add entries to
+\texttt{refs.bib} and cite them with \verb|\cite{key}|.
+
+\verb|\chapterbib| at the end of a chapter prints that chapter's
+\emph{References}; \verb|\bookbib| in the back matter prints the
+\emph{Bibliography} --- everything cited anywhere in the book, and nothing else.
+An entry left unused in \texttt{refs.bib} never appears, so the file can hold
+more than the notes currently draw on. The list below this page is
+\verb|\chapterbib| for this document.
+
+\section{Class options}
+
+Set these on the \verb|\documentclass| line in \texttt{book.tex}:
+
+\begin{minted}{latex}
+\documentclass[charter]{gwbook}      % XCharter instead of TeX Gyre Schola
+\documentclass[letterpaper]{gwbook}  % same text block on a US Letter sheet
+\documentclass[a4paper]{gwbook}      % ... or A4
+\documentclass[twoside]{gwbook}      % mirrored margins, chapters open recto
+\documentclass[draft]{gwbook}        % skip highlighting; faster rebuilds
+\documentclass[nocolor]{gwbook}      % black-and-white code, hidden links
+\end{minted}
+
+\section{Building}
+
+\begin{minted}{bash}
+make latex                              # book.pdf + every chapter + this file
+make latex CH=ch03-magnetostatics       # one chapter, for fast iteration
+make latex-check                        # fail if any listing lost highlighting
+make clean                              # remove LaTeX aux files (keeps dist/)
+\end{minted}
+
+\begin{gwbox}[Two things that will bite you]
+\textbf{Always build through \texttt{latexmk}, never a bare \texttt{lualatex}.}
+minted highlights on its \emph{second} pass; a single pass silently produces a
+red \texttt{<MINTED>} placeholder and still exits successfully.
+\verb|make latex-check| is the guard against shipping that.
+
+\smallskip
+\textbf{Build the book at least once} before relying on a reference that points
+from one chapter into another. Standalone chapter builds read those labels from
+\texttt{book.aux}.
+\end{gwbox}
+
+\chapterbib

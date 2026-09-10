@@ -1,0 +1,24 @@
+%% Wrapper used by this directory's Makefile to export one TikZ figure as a
+%% standalone, tight-cropped PDF. The book never compiles this -- it \inputs the
+%% fragments directly via \tikzfig.
+%%
+%% The figure to draw is passed in on the command line:
+%%     lualatex -jobname=NAME "\def\FIG{NAME.tex}\input{_wrapper}"
+%%
+%% Fonts match gwbook's defaults so an exported figure looks like what lands
+%% on the page. Leading underscore keeps it out of the Makefile's wildcard.
+
+\documentclass[border=6pt]{standalone}
+
+\usepackage{fontspec}
+\usepackage{unicode-math}
+\setmainfont{texgyreschola}[
+  Extension=.otf, UprightFont=*-regular, ItalicFont=*-italic,
+  BoldFont=*-bold, BoldItalicFont=*-bolditalic]
+\setmathfont{texgyreschola-math.otf}
+
+\usepackage{tikz}
+
+\begin{document}
+\input{\FIG}
+\end{document}

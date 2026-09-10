@@ -1,0 +1,9 @@
+# Generated from the .tex sources here — regenerate with `make` (needs LuaLaTeX).
+# The book does not use these PDFs; they are exports for reuse in slides.
+*.pdf
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.xdv
+*.synctex.gz

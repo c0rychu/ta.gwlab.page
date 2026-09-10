@@ -18,6 +18,7 @@ notebooks = [
     "numpy",
     "matplotlib",
     "astropy",
+    "physics-plot",
 ]
 # Synced by a bare `uv sync`, so the default environment is notebook-ready.
 dev = [{ include-group = "notebooks" }]
