@@ -24,3 +24,6 @@ dev = [{ include-group = "notebooks" }]
 
 [tool.uv]
 package = false
+
+[tool.pyrefly]
+python-interpreter-path = ".venv/bin/python"
