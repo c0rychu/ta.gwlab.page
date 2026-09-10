@@ -1,0 +1,26 @@
+# This repo is a website, not a Python package — the [project] table exists so
+# `uv sync` can build a virtualenv for working on the notebooks in ipynb/.
+#
+# The site build (site/build.py) deliberately does NOT depend on this file: its
+# dependency is declared in its own PEP 723 header, so CI renders the site in a
+# tiny isolated environment instead of installing the whole scientific stack.
+
+[project]
+name = "ta-gwlab-page"
+version = "0"
+description = "Classroom tools site and teaching notebooks"
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+notebooks = [
+    "ipykernel",
+    "numpy",
+    "matplotlib",
+    "astropy",
+]
+# Synced by a bare `uv sync`, so the default environment is notebook-ready.
+dev = [{ include-group = "notebooks" }]
+
+[tool.uv]
+package = false

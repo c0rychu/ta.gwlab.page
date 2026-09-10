@@ -4,6 +4,9 @@ dist/
 # Downloaded toolchain (tailwind standalone binary)
 .tools/
 
+# Notebook virtualenv from `uv sync` (uv.lock IS committed — it pins the env)
+.venv
+
 # Generated PDFs never live in the repo (force one in with `git add -f` if ever needed)
 *.pdf
 

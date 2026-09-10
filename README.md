@@ -39,6 +39,29 @@ required) and uses [uv](https://docs.astral.sh/uv/) to run the build script. Bot
 `.tools/` and `dist/` are gitignored — nothing generated is ever committed. Re-run
 `make site` after editing and reload the page.
 
+The build script needs no project setup: its one dependency is declared in its own
+[PEP 723](https://peps.python.org/pep-0723/) header, so `uv run site/build.py` resolves
+it in an isolated environment. Without uv, `pip install markdown && python site/build.py`
+does the same thing.
+
+## Working on the notebooks
+
+```sh
+uv sync
+```
+
+That creates `.venv/` with `ipykernel`, `numpy`, `matplotlib` and `astropy` from the
+`notebooks` dependency group in `pyproject.toml`, pinned by the committed `uv.lock`.
+Point Jupyter or VS Code at `.venv` as the kernel. To add a package:
+
+```sh
+uv add --group notebooks scipy
+```
+
+`pyproject.toml` exists only for this environment — the repo is not a Python package
+(`package = false`), and the site build does not read it, so CI never installs the
+scientific stack just to render a page.
+
 ## Layout
 
 ```
@@ -49,6 +72,7 @@ site/           the website
   static/         copied verbatim to the site root (CNAME, favicon)
 ipynb/          notebooks, linked from links.md via Colab
 dist/           build output — gitignored, and exactly what Pages serves
+pyproject.toml  notebook dev environment only (uv sync); not used by the site build
 ```
 
 One top-level directory per kind of source. `dist/` is the only output.
