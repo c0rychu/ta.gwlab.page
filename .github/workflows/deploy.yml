@@ -26,6 +26,9 @@ jobs:
       - uses: astral-sh/setup-uv@v10.0.1
         with:
           enable-cache: true
+          # Dependencies are declared in build.py's PEP 723 header, not in a
+          # requirements/pyproject file, so key the cache on the script itself.
+          cache-dependency-glob: site/build.py
 
       - name: Cache tailwind binary
         uses: actions/cache@v6
