@@ -11,9 +11,46 @@
 \chapter{Electrostatics}
 \label{ch:electrostatics}
 
-Electrostatics
-
 \section{Coulomb's law}
+
+\begin{figure}[htbp]
+  \centering
+  \tikzfig{ch01-coulomb-law.tex}
+  \caption{Coulomb's law. The source charge $Q$ sits at $\mathbf{r}'$ and the
+  charge $q$ sits at $\mathbf{r}$, which feels the force $\mathbf{F}$ due to $Q$.}
+  \label{fig:coulomb-law}
+\end{figure}
+
+
+\begin{keyeq}
+  \label{eq:coulomb-law}
+  \mathbf{F}
+  =
+  k_e 
+  \frac{Q \, q}{\abs{\mathbf{R}}^2}
+  \hat{\mathbf{R}}
+  \;,
+\end{keyeq}
+where
+\begin{align}
+    k_e
+    &=
+    \frac{1}{4 \pi \epsilon_0}
+    \approx 9 \times 10^9 \;\mathrm{N \cdot m^2 / C^2}
+    \\
+    \mathbf{R}
+    &=
+    \mathbf{r} - \mathbf{r}'
+    \\
+    \hat{\mathbf{R}}
+    &=
+    \frac{
+    \mathbf{R}
+    }{
+    \abs{\mathbf{R}}
+    }
+\end{align}
+
 
 
 \section{The electric field}
