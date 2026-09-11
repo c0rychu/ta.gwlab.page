@@ -238,7 +238,15 @@ into *another* chapter resolve in standalone chapter PDFs too, via `xr-hyper` re
 Class options: `charter` swaps the typeface from TeX Gyre Schola to XCharter (each
 carries its own leading); `letterpaper` / `a4paper` put the same text block on a
 printable sheet; `twoside` mirrors the margins; `draft` skips syntax highlighting for
-faster rebuilds; `nocolor` makes the boxes and code black-and-white.
+faster rebuilds; `nocolor` makes the boxes and code black-and-white; `nophysics` drops
+the `physics` package, which a document using `siunitx` needs — both define `\qty`.
+
+Math comes with `physics` loaded, `\mathrm`/`\mathit`/`\mathbf` pointed at the Unicode
+math alphabets rather than the text font, and accents re-centred over every upright
+glyph, so `\hat{\mathbf{R}}` needs no `\skew` fudging. `/notes/gwbook-accents.pdf` and
+`/notes/gwbook-accents-charter.pdf` print every letter with a hat on it — including a
+hairline through the centre of each letter's ink — so the placement can be checked
+rather than taken on trust.
 
 ### Two things worth knowing
 

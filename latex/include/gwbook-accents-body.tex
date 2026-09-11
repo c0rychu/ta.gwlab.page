@@ -1,0 +1,301 @@
+%% Shared body of the math-accent specimen.
+%%
+%% Not a document root -- it is \input by gwbook-accents.tex and
+%% gwbook-accents-charter.tex, which supply the \documentclass and differ only in
+%% the typeface. It lives in include/ because `make latex` treats every
+%% top-level .tex in latex/ as a root and would otherwise compile this alone.
+%%
+%% This sheet exists to be looked at: the class re-centres math accents over
+%% every upright glyph (see the "Math accents" note in gwbook.cls), and the only
+%% way to know that worked for all 52 letters in both faces is to print them.
+
+%% ---------------------------------------------------------------------------
+%% The hairline used in "Reading the rule" below.
+%% ---------------------------------------------------------------------------
+%% The rule is drawn at the centre of the base letter's ink -- which is a glyph
+%% property, not a box property, so TeX cannot measure it and Lua has to. Walk
+%% the typeset box, find the base glyph (the first one that is not a combining
+%% accent), and report the middle of its bounding box.
+
+\newdimen\gwbcentre
+
+\begin{luacode*}
+local GLYPH, HLIST, VLIST = node.id("glyph"), node.id("hlist"), node.id("vlist")
+
+local function is_accent(cp)
+  return (cp >= 0x0300 and cp <= 0x036F) or (cp >= 0x20D0 and cp <= 0x20EF)
+end
+
+-- Returns the base glyph and its x, in sp from the left edge of the list.
+-- Inside a vlist the children all start at the same x and a shift moves them
+-- right; inside an hlist each one moves x along by its own width.
+local function base_glyph(head, x, vertical)
+  for n in node.traverse(head) do
+    if n.id == GLYPH then
+      if not is_accent(n.char) then return n, x end
+      if not vertical then x = x + n.width end
+    elseif n.id == HLIST or n.id == VLIST then
+      local glyph, gx = base_glyph(n.head, x + (vertical and n.shift or 0),
+                                   n.id == VLIST)
+      if glyph then return glyph, gx end
+      if not vertical then x = x + n.width end
+    elseif not vertical and n.width then
+      x = x + n.width
+    end
+  end
+end
+
+function gwb_ink_centre(boxnum)
+  local centre = 0
+  local glyph, x = base_glyph(tex.box[boxnum].head, 0, false)
+  if glyph then
+    local tfm = fonts.hashes.identifiers[glyph.font]
+    local desc = tfm.descriptions and tfm.descriptions[glyph.char]
+    local bbox = desc and desc.boundingbox
+    if bbox then
+      centre = x + (bbox[1] + bbox[3]) / 2 * tfm.size / (tfm.units or 1000)
+    else
+      centre = x + glyph.width / 2
+    end
+  end
+  tex.setdimen("gwbcentre", centre)
+end
+\end{luacode*}
+
+\definecolor{gwbMark}{HTML}{C03030}
+
+% \ruled{<math>} -- the sample with a hairline through the base letter's ink
+% centre. \rlap has no width, so the rule and the sample share an origin.
+\newcommand{\ruled}[1]{%
+  \setbox0=\hbox{$#1$}%
+  \directlua{gwb_ink_centre(0)}%
+  \leavevmode
+  \rlap{\kern\gwbcentre
+        \textcolor{gwbMark}{\vrule width 0.2pt height 3.1ex depth 0.9ex}}%
+  \box0}
+
+% \gwbcaps{\symbf}{label} prints \hat over every capital in that alphabet,
+% \gwblows the same over the lowercase; the starred forms add the hairline.
+% \foreach comes from pgffor, which tikz brings in.
+\newlength{\gwblabelwidth}\setlength{\gwblabelwidth}{4.6em}
+\newcommand{\gwblabel}[1]{\makebox[\gwblabelwidth][l]{\footnotesize\ttfamily#1}}
+% A row that runs past the measure wraps under its first letter rather than
+% back to the margin, so the alphabet still reads as one block.
+\newcommand{\gwbrowstart}[1]{%
+  \par\nobreak\vspace{2pt}\noindent
+  \hangindent\gwblabelwidth \hangafter 1 \gwblabel{#1}}
+\newcommand{\gwbrow}[3]{%
+  \gwbrowstart{#2}%
+  \foreach \gwbL in {#3}{$\hat{#1{\gwbL}}$\hskip 0.3em}\par}
+\newcommand{\gwbrowruled}[3]{%
+  \gwbrowstart{#2}%
+  \foreach \gwbL in {#3}{\ruled{\hat{#1{\gwbL}}}\hskip 0.3em}\par}
+% The Greek rows are spelled out rather than looped: \foreach wants a list of
+% characters, and these are control sequences.
+\newcommand{\gwbg}[2]{$\hat{#1{#2}}$\hskip 0.3em}
+\newcommand{\gwbgreek}[1]{%
+  \gwbg{#1}{\Gamma}\gwbg{#1}{\Delta}\gwbg{#1}{\Theta}\gwbg{#1}{\Lambda}%
+  \gwbg{#1}{\Xi}\gwbg{#1}{\Pi}\gwbg{#1}{\Sigma}\gwbg{#1}{\Upsilon}%
+  \gwbg{#1}{\Phi}\gwbg{#1}{\Psi}\gwbg{#1}{\Omega}\hskip 0.6em
+  \gwbg{#1}{\alpha}\gwbg{#1}{\beta}\gwbg{#1}{\gamma}\gwbg{#1}{\delta}%
+  \gwbg{#1}{\epsilon}\gwbg{#1}{\zeta}\gwbg{#1}{\eta}\gwbg{#1}{\theta}%
+  \gwbg{#1}{\iota}\gwbg{#1}{\kappa}\gwbg{#1}{\lambda}\gwbg{#1}{\mu}%
+  \gwbg{#1}{\nu}\gwbg{#1}{\xi}\gwbg{#1}{\pi}\gwbg{#1}{\rho}%
+  \gwbg{#1}{\sigma}\gwbg{#1}{\tau}\gwbg{#1}{\upsilon}\gwbg{#1}{\phi}%
+  \gwbg{#1}{\chi}\gwbg{#1}{\psi}\gwbg{#1}{\omega}\par}
+
+\newcommand{\gwbcaps}[2]{\gwbrow{#1}{#2}{A,...,Z}}
+\newcommand{\gwblows}[2]{\gwbrow{#1}{#2}{a,...,z}}
+\newcommand{\gwbcapsruled}[2]{\gwbrowruled{#1}{#2}{A,...,Z}}
+\newcommand{\gwblowsruled}[2]{\gwbrowruled{#1}{#2}{a,...,z}}
+
+\maketitle
+\tableofcontents
+
+\chapter{Math accents}
+\label{ch:accents}
+
+An accent is positioned by a single number the font stores for each glyph: the
+top accent attachment point, the x where the peak of the accent goes. Font
+designers set it with care for the slanted alphabets, where an accent belongs
+over the top of the letter rather than over the middle of its ink. For the
+upright alphabets they often do not --- Schola's bold \(\symbf{R}\) carried a
+value about \(1.2\,\text{pt}\) left of centre, and XCharter-Math leaves most of
+its upright alphabets without one at all --- which is why
+\verb|\hat{\mathbf{R}}| used to need a hand-tuned \verb|\skew|.
+
+\texttt{gwbook.cls} overwrites that number for every upright glyph with the
+centre of the glyph's bounding box, and leaves every slanted one exactly as the
+designer set it. This sheet is the check. It is published twice from one
+source, once per typeface: \mbox{\texttt{gwbook-accents.pdf}} in TeX Gyre
+Schola and \mbox{\texttt{gwbook-accents-charter.pdf}} in XCharter.
+
+\section{Upright alphabets}
+\label{sec:upright}
+
+These are the ones the class re-centres. On every letter the peak of the hat
+should sit over the middle of the letter.
+
+\medskip
+\gwbcaps{\symup}{symup}
+\gwblows{\symup}{}
+\medskip
+\gwbcaps{\symbf}{symbf}
+\gwblows{\symbf}{}
+\medskip
+\gwbcaps{\symsf}{symsf}
+\gwblows{\symsf}{}
+\medskip
+\gwbcaps{\symbfsf}{symbfsf}
+\gwblows{\symbfsf}{}
+\medskip
+\gwbcaps{\symtt}{symtt}
+\gwblows{\symtt}{}
+
+\bigskip
+\gwbrowstart{digits}%
+\foreach \gwbL in {0,...,9}{$\hat{\gwbL}$\hskip 0.3em}\quad
+\foreach \gwbL in {0,...,9}{$\hat{\symbf{\gwbL}}$\hskip 0.3em}\par
+
+\medskip
+\gwbrowstart{symup Gk}\gwbgreek{\symup}
+
+\medskip
+\gwbrowstart{symbfup Gk}\gwbgreek{\symbfup}
+
+\section{Slanted alphabets}
+\label{sec:slanted}
+
+Untouched, for comparison: here the accent leans with the letter, which is the
+font designer's judgement and not something to correct. A slanted letter's top
+is to the right of its middle, and that is where the accent goes.
+
+\medskip
+\gwbcaps{\symit}{symit}
+\gwblows{\symit}{}
+\medskip
+\gwbcaps{\symbfit}{symbfit}
+\gwblows{\symbfit}{}
+
+\medskip
+\gwbrowstart{symbf Gk}\gwbgreek{\symbf}
+
+\noindent
+(\verb|\symbf| on a lowercase Greek letter gives the bold \emph{italic} shape;
+that is the TeX convention, and \verb|\symbfup| is the upright one.)
+
+\section{Reading the rule}
+\label{sec:rule}
+
+Whether an accent is centred is hard to judge by eye on a letter like
+\(\symbf{L}\) or \(\symbf{J}\), whose ink is nowhere near symmetric. The
+hairline below marks the centre of the base letter's ink. On the upright rows
+the peak of every hat should sit on it; on the italic row it should not, and
+by how much is the designer's call.
+
+\medskip
+\gwbcapsruled{\symup}{symup}
+\gwblowsruled{\symup}{}
+\medskip
+\gwbcapsruled{\symbf}{symbf}
+\gwblowsruled{\symbf}{}
+\medskip
+\gwbcapsruled{\symit}{symit}
+\gwblowsruled{\symit}{}
+
+\section{Every accent shape}
+\label{sec:shapes}
+
+All of them read the same attachment point, so fixing it fixes all of them at
+once. Each column is one accent over an upright bold letter, a wide one, a
+narrow one and a descender.
+
+% Each accent keeps its name next to it, and each name-and-sample pair is one
+% \mbox so a line break can only fall between pairs.
+\newcommand{\gwbacc}[3]{%
+  \mbox{{\footnotesize\ttfamily#2}\hskip 0.35em
+        $#1{#3{R}}\;#1{#3{W}}\;#1{#3{l}}\;#1{#3{q}}$}%
+  \hspace{1.1em plus 0.5em}}
+\newcommand{\gwbaccrow}[1]{%
+  \par\medskip{\raggedright\noindent
+  \gwbacc{\hat}{hat}{#1}\gwbacc{\check}{check}{#1}\gwbacc{\tilde}{tilde}{#1}%
+  \gwbacc{\acute}{acute}{#1}\gwbacc{\grave}{grave}{#1}\gwbacc{\dot}{dot}{#1}%
+  \gwbacc{\ddot}{ddot}{#1}\gwbacc{\breve}{breve}{#1}\gwbacc{\bar}{bar}{#1}%
+  \gwbacc{\vec}{vec}{#1}\gwbacc{\mathring}{mathring}{#1}\par}}
+
+\gwbaccrow{\symbf}
+
+\medskip
+\noindent
+The same over upright letters:
+
+\gwbaccrow{\symup}
+
+\section{Wide accents}
+\label{sec:wide}
+
+A wide accent grows to fit and is centred on the whole group, so it never
+depended on the attachment point in the first place. Shown to confirm nothing
+here regressed.
+
+\[
+  \widehat{AB}\quad \widehat{\symbf{ABC}}\quad \widetilde{xyz}\quad
+  \overline{\symbf{R}}\quad \overrightarrow{PQ}\quad
+  \overbrace{a+b+c}
+\]
+
+\section{The alphabet switches}
+\label{sec:alphabets}
+
+\verb|\mathrm|, \verb|\mathit| and \verb|\mathbf| are the Unicode alphabets
+\verb|\symup|, \verb|\symit| and \verb|\symbf| in this class, so they pick up
+the same fix. The two rows here must look identical.
+
+\medskip
+\noindent
+\gwblabel{mathbf}%
+$\hat{\mathbf{R}}\;\hat{\mathbf{A}}\;\hat{\mathbf{q}}\;\hat{\mathbf{f}}\;
+ \hat{\mathbf{W}}\;\hat{\mathbf{l}}$\qquad
+\gwblabel{symbf}%
+$\hat{\symbf{R}}\;\hat{\symbf{A}}\;\hat{\symbf{q}}\;\hat{\symbf{f}}\;
+ \hat{\symbf{W}}\;\hat{\symbf{l}}$
+
+\medskip
+\noindent
+\gwblabel{mathrm}%
+$\hat{\mathrm{R}}\;\hat{\mathrm{A}}\;\hat{\mathrm{q}}\;\hat{\mathrm{f}}\;
+ \hat{\mathrm{W}}\;\hat{\mathrm{l}}$\qquad
+\gwblabel{symup}%
+$\hat{\symup{R}}\;\hat{\symup{A}}\;\hat{\symup{q}}\;\hat{\symup{f}}\;
+ \hat{\symup{W}}\;\hat{\symup{l}}$
+
+\medskip
+\noindent
+\verb|\mathsf| and \verb|\mathtt| stay on the document's own sans and mono
+faces, which have no math data to position an accent with --- use
+\verb|\symsf| and \verb|\symtt| if you need to put an accent on one:
+$\hat{\mathsf{R}}$ \verb|\mathsf| versus $\hat{\symsf{R}}$ \verb|\symsf|.
+
+\section{Vectors from the physics package}
+\label{sec:physics}
+
+\verb|physics| is loaded by default, and its unit vector \verb|\vu| is
+\verb|\mathbf| applied to an accented letter, so it inherits the fix.
+
+\[
+  \vu{r}\quad \vu{n}\quad \vu{\theta}\quad \vb{E}\quad \va{v}\quad
+  \grad\phi \quad \div\vb{E} \quad \curl\vb{B} \quad \laplacian\phi
+\]
+\[
+  \dv{f}{x}\quad \pdv{f}{t}\quad \dd{x}\quad \abs{z}\quad \norm{v}\quad
+  \qty(\frac{a}{b})\quad \ev{H}\quad \braket{a}{b}
+\]
+
+\noindent
+\verb|physics| and \verb|unicode-math| both want \verb|\div|, \verb|\Re| and
+\verb|\Im|; the class hands all three to \verb|physics| and keeps the symbols
+under the names \verb|physics| gives them:
+\[
+  \div\vb{E} \quad \divisionsymbol \quad \Re z \quad \real z \quad
+  \Im z \quad \imaginary z
+\]

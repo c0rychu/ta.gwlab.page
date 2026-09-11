@@ -286,6 +286,40 @@ Give every figure a \verb|\label| and refer to it with \verb|\autoref|, never a
 bare ``see the figure below'' --- floats move. \autoref{fig:sphere-field},
 \autoref{fig:rc} and \autoref{fig:gauss} are all links.
 
+\section{Math}
+
+\texttt{physics} is loaded by default, so the vector calculus and the
+derivatives are one command each:
+
+\begin{minted}{latex}
+\div \vb{E} = \frac{\rho}{\varepsilon_0}
+\curl \vb{B} = \mu_0 \vb{J} + \mu_0\varepsilon_0 \pdv{\vb{E}}{t}
+\dv{f}{x} \qquad \qty(\frac{a}{b}) \qquad \abs{z} \qquad \vu{r}
+\end{minted}
+
+\noindent
+\(\div \vb{E} = \frac{\rho}{\varepsilon_0}\), \quad
+\(\curl \vb{B} = \mu_0 \vb{J} + \mu_0\varepsilon_0 \pdv{\vb{E}}{t}\), \quad
+\(\dv{f}{x}\), \quad \(\qty(\frac{a}{b})\), \quad \(\abs{z}\), \quad
+\(\vu{r}\).
+
+\texttt{physics} and \texttt{unicode-math} both want \verb|\div|, \verb|\Re|
+and \verb|\Im|. The class gives all three to \texttt{physics}, so \verb|\div|
+is the divergence and \verb|\Re| is \(\Re z\); the displaced symbols keep the
+names \texttt{physics} gives them --- \verb|\divisionsymbol| is
+\(\divisionsymbol\), \verb|\real| is \(\real z\) and \verb|\imaginary| is
+\(\imaginary z\). One collision has no fix: \texttt{siunitx} v3 uses
+\verb|\qty| for its own quantities, so a document that needs \texttt{siunitx}
+wants the \texttt{nophysics} class option.
+
+\verb|\mathrm|, \verb|\mathit| and \verb|\mathbf| are the Unicode math
+alphabets \verb|\symup|, \verb|\symit| and \verb|\symbf| here, rather than the
+text font that \texttt{fontspec} would otherwise put in a formula. That is what
+makes accents land correctly: \(\hat{\mathbf{R}}\), \(\hat{\mathbf{A}}\),
+\(\hat{\mathbf{q}}\) need no \verb|\skew| tuning. The class re-centres every
+accent over every upright glyph; \mbox{\texttt{gwbook-accents.pdf}} prints the
+whole alphabet in both faces so the result can be checked at a glance.
+
 \section{Cross-references}
 
 Label anything, then refer to it with \verb|\autoref| --- which makes the whole
@@ -324,6 +358,7 @@ Set these on the \verb|\documentclass| line in \texttt{book.tex}:
 \documentclass[twoside]{gwbook}      % mirrored margins, chapters open recto
 \documentclass[draft]{gwbook}        % skip highlighting; faster rebuilds
 \documentclass[nocolor]{gwbook}      % black-and-white code, hidden links
+\documentclass[nophysics]{gwbook}    % drop physics (its \qty clashes with siunitx)
 \end{minted}
 
 \section{Building}
