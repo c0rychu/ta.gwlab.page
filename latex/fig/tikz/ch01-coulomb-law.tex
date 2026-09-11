@@ -1,0 +1,64 @@
+% Coulomb's law: the force on q due to Q, and the vectors that locate them.
+%
+% Pulled in with \tikzfig{ch01-coulomb-law.tex}. A fragment, not a document --
+% one tikzpicture, no preamble -- so it inherits the fonts of whatever \inputs
+% it. The library load is idempotent and keeps the fragment self-contained.
+%
+% Everything is placed by TikZ's own machinery rather than by measured offsets,
+% so the drawing survives being resized or re-lettered:
+%
+%   - the charges and the origin are nodes, so every arrow is clipped at their
+%     border automatically; `outer sep' is the gap, one number per kind of
+%     object rather than one per arrow;
+%   - the vector names are nodes on their own path with `auto', so TikZ chooses
+%     which side of the line to sit on and the node's own inner sep sets how
+%     far off it sits;
+%   - the charge names are `label's, which stay put relative to the ring if the
+%     ring is ever resized.
+%
+% What is left to choose is the style of the figure as a whole -- its scale, how
+% big a charge is, how heavy the strokes are -- which is the level worth having
+% knobs at. The one computed coordinate is the tip of F, and that is the point:
+% it is R extended past q, so it cannot drift out of parallel with R.
+%
+% Both charges are positive, which is what puts F along R rather than against
+% it. The charges sit off-axis so no direction looks preferred, and Q sits above
+% the line O-q, which opens the triangle O-Q-q wide enough to letter on all
+% three sides.
+\usetikzlibrary{arrows.meta, calc}
+\begin{tikzpicture}[
+    % The figsize knob: distances scale, lettering and node sizes do not.
+    scale=1.2,
+    >={Latex},
+    charge/.style = {circle, draw, fill=white, line width=0.9pt,
+                     minimum size=12pt, inner sep=0pt, outer sep=2.5pt,
+                     font=\normalsize},
+    point/.style  = {circle, fill, minimum size=4.5pt, inner sep=0pt,
+                     outer sep=0pt},
+    vec/.style    = {->, line width=0.9pt},
+    % F is the one thing the law asserts; the rest of the figure constructs it.
+    force/.style  = {vec, line width=1.4pt},
+    % outer sep already holds everything off the ring -- anchors sit outside
+    % it, so a label inherits that clearance and needs no distance of its own.
+    every label/.style = {inner sep=0pt},
+  ]
+
+  \node[point,  label=below right:$O$] (O) at (0,0)       {};
+  \node[charge, label=below right:$Q$] (Q) at (1.15,1.95) {$+$};
+  \node[charge, label=below right:$q$] (q) at (4.60,1.30) {$+$};
+
+  % `auto' puts a name to the left of the way the arrow travels; `swap' takes
+  % the other side. Here that is the choice of outside the triangle, in each
+  % case, and it needs no coordinates.
+  \draw[vec] (O) -- node[auto]       {$\mathbf{r}'$} (Q);
+  \draw[vec] (O) -- node[auto, swap] {$\mathbf{r}$}  (q);
+
+  % Set along the arrow: the expression is too wide to sit level over a sloped
+  % line without fouling it.
+  \draw[vec] (Q) -- node[auto, sloped] {$\mathbf{R} = \mathbf{r} - \mathbf{r}'$} (q);
+
+  % R continued past q by 45% of its length -- which is the whole content of
+  % the law, and is why the direction is taken from R instead of typed out.
+  \draw[force] (q) -- node[auto] {$\mathbf{F}$} ($(q)!-0.45!(Q)$);
+
+\end{tikzpicture}
