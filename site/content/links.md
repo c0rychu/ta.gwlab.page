@@ -15,6 +15,12 @@
 - [Discussion Section 605](https://uws.instructure.com/courses/862717/external_tools/4) - 4:30 – 5:20 pm
 - [Discussion Section 604](https://uws.instructure.com/courses/858304/external_tools/4) - 7:00 – 7:50 pm
 
+## Discussion Notes
+
+- [Full Notes](notes/book.pdf) - PDF of all discussion notes (keep updatating)
+- By Chapters
+  - [Ch01 - Electrostatics](notes/ch01-electrostatics.pdf) - Topic 15, 16
+
 ## IPython Notebooks (Google Colab)
 
 - [IPython Notebook - Electrodynamics](https://colab.research.google.com/github/c0rychu/ta.gwlab.page/blob/main/ipynb/em.ipynb)
