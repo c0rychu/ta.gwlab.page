@@ -268,9 +268,21 @@ luatexbase.add_to_callback("luaotfload.patch_font",
 \RequirePackage{titlesec}
 \RequirePackage{fancyhdr}
 
+% \chapterbanner{...} -- material printed above the chapter title, at the very
+% top of a chapter's opening page. Empty here: in the book the title page
+% already says who wrote it and when. It exists for the per-chapter PDFs, which
+% travel on their own with no title page in front of them and so have to carry
+% that themselves; include/chapter-banner.tex fills it in for those builds.
+%
+% It rides in the \titleformat label rather than being typeset from
+% \AtBeginDocument, because a \chapter starts a fresh page: anything emitted
+% before it would be stranded on a page of its own.
+\newcommand{\gwb@chapterbanner}{}
+\newcommand{\chapterbanner}[1]{\renewcommand{\gwb@chapterbanner}{#1}}
+
 \titleformat{\chapter}[display]
   {\normalfont\huge\bfseries}
-  {\normalsize\normalfont\scshape\chaptertitlename\ \thechapter}
+  {\gwb@chapterbanner\normalsize\normalfont\scshape\chaptertitlename\ \thechapter}
   {10pt}{\Huge}[\vspace{8pt}\titlerule]
 \titlespacing*{\chapter}{0pt}{0pt}{30pt}
 

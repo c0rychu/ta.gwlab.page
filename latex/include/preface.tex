@@ -1,0 +1,16 @@
+%% Preface -- front matter of the whole book.
+%%
+%% Not a subfile and not a chapter: \input by book.tex, so it appears in
+%% book.pdf only. The per-chapter PDFs carry the same "where to find the
+%% current version" line in their page header instead -- see chapter-banner.tex.
+%% It lives in include/ rather than chapters/ because `make latex` compiles
+%% every chapters/*.tex on its own, and this file is not a standalone document.
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+\markboth{Preface}{Preface}
+
+This is written for a discussion section at University of Wisconsin-Milwaukee.
+
+The up-to-date version is available at
+\href{https://ta.gwlab.page/}{https://ta.gwlab.page}.

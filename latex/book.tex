@@ -17,6 +17,11 @@
 % chapters/refs.bib and silently finds no bibliography.
 \addbibresource{\subfix{refs.bib}}
 
+% Author/URL/date header for the per-chapter PDFs. Read here so that one file
+% serves every chapter build; it does nothing in this one. Same \subfix reason
+% as above -- without it a standalone chapter looks for chapters/include/.
+\input{\subfix{include/chapter-banner}}
+
 \title{Notes on General Physics II}
 \subtitle{Electricity, Magnetism and Optics}
 \author{Cory Chu}
@@ -27,6 +32,9 @@
 \frontmatter
 \maketitle
 \tableofcontents
+% After the contents, per the usual front-matter order. Book-only: a chapter
+% build never reads this far, since subfiles stops at \begin{document}.
+\input{include/preface}
 
 \mainmatter
 % Chapter order lives here and nowhere else -- reordering is a matter of moving
