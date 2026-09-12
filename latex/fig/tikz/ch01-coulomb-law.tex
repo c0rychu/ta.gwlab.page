@@ -2,7 +2,8 @@
 %
 % Pulled in with \tikzfig{ch01-coulomb-law.tex}. A fragment, not a document --
 % one tikzpicture, no preamble -- so it inherits the fonts of whatever \inputs
-% it. The library load is idempotent and keeps the fragment self-contained.
+% it. The libraries it needs are loaded by the preamble, not here -- see the
+% note above the picture.
 %
 % Everything is placed by TikZ's own machinery rather than by measured offsets,
 % so the drawing survives being resized or re-lettered:
@@ -25,7 +26,11 @@
 % it. The charges sit off-axis so no direction looks preferred, and Q sits above
 % the line O-q, which opens the triangle O-Q-q wide enough to letter on all
 % three sides.
-\usetikzlibrary{arrows.meta, calc}
+% Needs the arrows.meta and calc libraries. They are NOT loaded
+% here: \usetikzlibrary inside a figure environment sets its "loaded" flag
+% globally but its definitions only for that group, which silently disarms the
+% next figure's load. gwbook.cls and _wrapper.tex load them in the preamble
+% instead -- add to those two if this figure ever needs another.
 \begin{tikzpicture}[
     % The figsize knob: distances scale, lettering and node sizes do not.
     scale=1.2,

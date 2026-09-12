@@ -314,6 +314,22 @@ luatexbase.add_to_callback("luaotfload.patch_font",
 \RequirePackage{graphicx}
 \RequirePackage{tikz}
 
+% TikZ libraries are loaded HERE, in the preamble, and not by the figure
+% fragments that need them -- despite \usetikzlibrary looking idempotent.
+% It is not, across groups: it sets its "already loaded" flag \global (see
+% \use@@tikzlibrary in tikz.code.tex) while the library's own definitions
+% obey the group they were read in. A fragment \input inside a figure
+% environment therefore loads the library for itself and leaves the flag
+% standing afterwards, so the NEXT figure's \usetikzlibrary is a silent no-op
+% and its arrow tips come back "Unknown arrow tip kind". The first figure in a
+% document works; every later one fails. Loading at preamble level, outside any
+% group, is what makes the definitions outlive the figure that triggered them.
+%
+% So: a fragment needing a library not in this list adds it to this list, and
+% to fig/tikz/_wrapper.tex, which is the same preamble for the standalone
+% export. Do not add it to the fragment.
+\usetikzlibrary{arrows.meta, calc, patterns.meta}
+
 \graphicspath{
   {fig/plots/}{fig/svg/}{fig/tikz/}{fig/others/}
   {../fig/plots/}{../fig/svg/}{../fig/tikz/}{../fig/others/}

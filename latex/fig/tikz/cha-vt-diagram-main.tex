@@ -36,7 +36,11 @@
 \pgfmathsetmacro{\barbLen}{6}                               % pt
 \pgfmathsetmacro{\barbWid}{2*\barbLen*tan(\barbAng/2)}      % pt
 
-\usetikzlibrary{arrows.meta, calc, patterns.meta}
+% Needs the arrows.meta, calc and patterns.meta libraries. They are NOT loaded
+% here: \usetikzlibrary inside a figure environment sets its "loaded" flag
+% globally but its definitions only for that group, which silently disarms the
+% next figure's load. gwbook.cls and _wrapper.tex load them in the preamble
+% instead -- add to those two if this figure ever needs another.
 \begin{tikzpicture}[
     % The figsize knob: distances scale, lettering and hatching do not.
     scale=1.15,
