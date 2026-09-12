@@ -1,0 +1,172 @@
+% The v--t diagram for constant acceleration: the line whose height is
+% v_f = v_0 + a(Delta t), and the area under it, which is the displacement.
+%
+% The elapsed interval is lettered Delta t rather than t, so that it is not
+% read as the coordinate the axis is already called t. The final speed follows
+% it to v_f: a v_t here would put that same bare t back in the picture, in the
+% one place a reader is looking for the interval.
+%
+% Pulled in with \tikzfig{cha-vt-diagram-main.tex}. A fragment, not a document
+% -- one tikzpicture, no preamble -- so it inherits the fonts of whatever
+% \inputs it. The library loads are idempotent and keep the fragment
+% self-contained.
+%
+% Why the trapezoid is split the way it is: the whole point of the diagram is
+% that the area under the line reads as a rectangle v_0 x (Delta t) stacked
+% under a triangle of height a(Delta t), which is where the two terms of
+% Delta x = v_0(Delta t) + (1/2)a(Delta t)^2 come from. So the v_0 level line
+% runs the full width -- it is the lid of the rectangle, not merely a tick --
+% and the dimensions at x = \xdim are stacked v_0 then a(Delta t), in the
+% order the terms appear in the result.
+%
+% The level lines and the t axis are continued to the right as dashes so the
+% overall v_f dimension has something to measure between. That continuation is
+% a construction line rather than part of the graph, which is what the change
+% of dash pattern says.
+%
+% Everything in the picture is derived from the two groups of constants below:
+% three that say what the motion is, and four that say how loosely it is set.
+% Nothing else is a bare number, so the figure can be re-proportioned or
+% re-lettered without hunting for offsets that happened to look right.
+
+% Kept outside the picture because the style below expands them: the barb's
+% included angle is what a maintainer thinks in, but Straight Barb has no key
+% for it, so the width is computed from it rather than typed as a decimal.
+\pgfmathsetmacro{\barbAng}{60}                              % degrees
+\pgfmathsetmacro{\barbLen}{6}                               % pt
+\pgfmathsetmacro{\barbWid}{2*\barbLen*tan(\barbAng/2)}      % pt
+
+\usetikzlibrary{arrows.meta, calc, patterns.meta}
+\begin{tikzpicture}[
+    % The figsize knob: distances scale, lettering and hatching do not.
+    scale=1.15,
+    >={Latex},
+    axis/.style  = {->, line width=0.9pt},
+    % The graph itself is the heaviest stroke in the picture; everything else
+    % is there to measure it.
+    graph/.style = {line width=1.3pt},
+    % Construction: levels carried across to the dimensions on the right.
+    % Long dashes, no dots: at this line width a dot reads as a blemish rather
+    % than as part of the pattern. The gap is held at 40% of the dash, which is
+    % what keeps the line scanning as one level rather than a row of ticks --
+    % so tighten by shortening both together, never by closing the gap alone.
+    % Measured at this 0.6pt width: 2.5pt/1pt is tighter still, 2pt/0.8pt is
+    % about the floor, and by 1.5pt/0.7pt the dashes silt up and read solid.
+    level/.style = {dash pattern=on 3pt off 1.2pt, line width=0.6pt},
+    dim/.style   = {<->, line width=0.7pt},
+    % The hatch reads as "area" in black and white, which a grey fill does not.
+    % Lines[] is the stock north east lines hatch with its spacing exposed.
+    % Stock sits near 2pt, which fills in to a grey wash at print size; 3.5pt
+    % keeps the texture reading as separate strokes without thinning out into
+    % a few stray diagonals. distance is the knob -- raise it for sparser.
+    area/.style  = {pattern={Lines[angle=45, distance=3.5pt, line width=0.45pt]},
+                    pattern color=black!60},
+    % The pointer to the result is the one informal mark in the figure -- a
+    % pen gesture rather than a measurement -- so it gets a round cap and a
+    % single unbroken sweep instead of the dimension arrows' square ends.
+    % Straight Barb is an open V of two strokes, which is the head a pen
+    % actually makes; the filled triangles (Latex, Stealth) are draughtsman's
+    % marks and belong on the dimensions, where they are already doing the job
+    % of pointing at an exact height.
+    soft/.style  = {->, >={Straight Barb[round, length=\barbLen pt,
+                                         width=\barbWid pt]},
+                    line width=0.7pt, line cap=round, line join=round},
+  ]
+
+  % --- what the motion is ----------------------------------------------------
+  % Three chosen numbers; v_f is derived, so the picture cannot end up
+  % asserting a height that disagrees with its own slope.
+  \pgfmathsetmacro{\vz}{2.0}        % v_0, the intercept
+  \pgfmathsetmacro{\T}{5.0}         % Delta t, the interval being marked off
+  \pgfmathsetmacro{\rise}{1.3}      % a(Delta t), the speed gained over it
+  \pgfmathsetmacro{\vf}{\vz+\rise}  % v_f, derived, never typed
+
+  % --- how loosely it is set -------------------------------------------------
+  % \gap   the one clearance unit: between any two columns of the right-hand
+  %        margin, and between the v axis and the dimension left of it
+  % \lblw  room for the a(Delta t) label, which is what holds the overall v_f
+  %        dimension clear of it. The one measured quantity here, and so the
+  %        one thing to re-check if that label is ever re-lettered longer
+  % \stub  how far the t axis and the v_0 level poke out past the left
+  %        dimension, so that dimension has something to sit against
+  % \runout how far an axis runs past the content it carries, before its tip
+  %        (named around \over, which is a TeX primitive and must not be
+  %        shadowed in a group where math is typeset)
+  \pgfmathsetmacro{\gap}{0.55}
+  \pgfmathsetmacro{\lblw}{1.0}
+  \pgfmathsetmacro{\stub}{0.35}
+  \pgfmathsetmacro{\runout}{0.95}
+
+  % The right margin, left to right: the stacked v_0 / a(Delta t) dimension,
+  % the room its labels need, then the overall v_f dimension, then the levels
+  % run one gap past everything. The t axis stops one gap short of the overall
+  % dimension, so its arrow does not read as pointing at it.
+  \pgfmathsetmacro{\xleft}{-\gap}
+  \pgfmathsetmacro{\xdim}{\T+\gap}
+  \pgfmathsetmacro{\xtot}{\xdim+\lblw+\gap}
+  \pgfmathsetmacro{\xtip}{\xtot-\gap}
+  \pgfmathsetmacro{\xlev}{\xtot+\gap}
+
+  \coordinate (O)  at (0,0);
+  \coordinate (A)  at (0,\vz);      % where the motion starts
+  \coordinate (B)  at (\T,\vf);     % ... and where it is at the end of Delta t
+  \coordinate (Bt) at (\T,0);
+
+  % --- the area --------------------------------------------------------------
+  % Filled before anything is drawn, so the axes and the graph sit on top of
+  % the hatching rather than under it. Its four sides are the v axis, the t
+  % axis, the ordinate at Delta t and the graph -- all drawn below in their own
+  % right, so this path only fills and never strokes.
+  \path[area] (O) -- (Bt) -- (B) -- (A) -- cycle;
+
+  % --- axes ------------------------------------------------------------------
+  \draw[axis] (\xleft-\stub,0) -- (\xtip,0) node[below right=1pt] {$t$};
+  \draw[axis] (0,-\runout) -- (0,\vf+\runout) node[above left=1pt] {$v$};
+
+  % --- the graph -------------------------------------------------------------
+  % Extended 15% past B rather than to a typed endpoint: the continuation is
+  % then guaranteed collinear with the segment being measured, which is the
+  % one thing a reader checks by eye.
+  \draw[graph] (A) -- ($(A)!1.15!(B)$);
+  \draw[graph] (Bt) -- (B);
+
+  % --- construction levels ---------------------------------------------------
+  \draw[level] (\xleft-\stub,\vz) -- (\xlev,\vz);
+  \draw[level] (B) -- (\xlev,\vf);
+  \draw[level] (\xtip,0) -- (\xlev,0);
+
+  % --- dimensions ------------------------------------------------------------
+  \draw[dim] (\xleft,0)  -- node[left]  {$v_0$} (\xleft,\vz);
+  \draw[dim] (\xdim,0)   -- node[right] {$v_0$} (\xdim,\vz);
+  \draw[dim] (\xdim,\vz) -- node[right] {$a\,\Delta t$} (\xdim,\vf);
+  \draw[dim] (\xtot,0)   -- node[right] {$v_f = v_0 + a\,\Delta t$} (\xtot,\vf);
+
+  % The base of the trapezoid. Set below the axis so it is read as the width
+  % of the shaded region, not as a coordinate on it.
+  \node[below=3pt] at (\T/2,0) {$\Delta t$};
+
+  % --- what the area comes to ------------------------------------------------
+  % Two lines in one node rather than an aligned environment: the fragment has
+  % to typeset under this directory's minimal standalone wrapper as well as
+  % inside the book, and the wrapper loads no math package beyond unicode-math.
+  % \phantom carries the second line's "=" under the first.
+  %
+  % Anchored by its top-left corner rather than centred on a tuned offset. That
+  % corner is where the pointer lands, so anchoring it means re-setting the
+  % expression wider or taller can no longer drag the target around -- and
+  % since the corner is at positive x by construction, the pointer can never be
+  % left having to cross the v axis to reach it.
+  \node (area) [align=left, anchor=north west] at (0.30*\T,-0.90) {%
+    $\Delta x = v_0\,\Delta t + \frac{1}{2}(a\,\Delta t)(\Delta t)$ \\[2pt]
+    $\phantom{\Delta x} = v_0\,\Delta t + \frac{1}{2}a\,(\Delta t)^2$};
+
+  % Leaves the area heading straight down and arrives heading down-and-left, so
+  % the two tangents disagree and the curve has to bow to join them -- a single
+  % sweep with no straight stretch in it. Matching the tangents (or aiming
+  % either end at the other) collapses it into a diagonal line, which is the
+  % one shape a pen would not make. The tail is a fraction of the figure rather
+  % than a point, so it stays inside the area at any proportions.
+  \draw[soft] (0.40*\T,0.70*\vz) to[out=-90, in=100, looseness=1.25]
+        (area.north west);
+
+\end{tikzpicture}
