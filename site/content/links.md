@@ -20,6 +20,7 @@
 - [Full Notes](notes/book.pdf) - PDF of all discussion notes (keep updatating)
 - By Chapters
   - [Ch01 - Electrostatics](notes/ch01-electrostatics.pdf) - Topic 15, 16
+  - [Appendix A - v-t diagrams](notes/cha-vt-diagram.pdf)
 
 ## IPython Notebooks (Google Colab)
 
