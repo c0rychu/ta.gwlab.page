@@ -12,6 +12,10 @@
 
 \usepackage{fontspec}
 \usepackage{unicode-math}
+% unicode-math pulls amsmath in anyway; naming it makes the dependency explicit,
+% since fragments use aligned/\dfrac and must typeset the same here as in the
+% book, where gwbook.cls gets amsmath via physics.
+\usepackage{amsmath}
 \setmainfont{texgyreschola}[
   Extension=.otf, UprightFont=*-regular, ItalicFont=*-italic,
   BoldFont=*-bold, BoldItalicFont=*-bolditalic]

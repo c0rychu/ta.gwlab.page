@@ -49,6 +49,11 @@
     % The graph itself is the heaviest stroke in the picture; everything else
     % is there to measure it.
     graph/.style = {line width=1.3pt},
+    % The ordinate at Delta t closes the shaded area but asserts nothing about
+    % the motion -- it is where we chose to stop, not something the diagram is
+    % claiming -- so it is drawn at a construction weight. At the graph's 1.3pt
+    % it read as a second heavy line and made the trapezoid look like a box.
+    guide/.style = {line width=0.7pt},
     % Construction: levels carried across to the dimensions on the right.
     % Long dashes, no dots: at this line width a dot reads as a blemish rather
     % than as part of the pattern. The gap is held at 40% of the dash, which is
@@ -88,16 +93,20 @@
   % --- how loosely it is set -------------------------------------------------
   % \gap   the one clearance unit: between any two columns of the right-hand
   %        margin, and between the v axis and the dimension left of it
-  % \lblw  room for the a(Delta t) label, which is what holds the overall v_f
+  % \lblw  room for the Delta v label, which is what holds the overall v_f
   %        dimension clear of it. The one measured quantity here, and so the
-  %        one thing to re-check if that label is ever re-lettered longer
+  %        one thing to re-check if that label is ever re-lettered longer.
+  %        Measure, do not guess: \sbox the label in gwbook.cls and read \the\wd,
+  %        then divide by 1cm and by the picture's scale to get these units. It
+  %        must fit the BOOK's setting, which is the wider of the two -- the
+  %        standalone export sets the same label about 17% narrower.
   % \stub  how far the t axis and the v_0 level poke out past the left
   %        dimension, so that dimension has something to sit against
   % \runout how far an axis runs past the content it carries, before its tip
   %        (named around \over, which is a TeX primitive and must not be
   %        shadowed in a group where math is typeset)
   \pgfmathsetmacro{\gap}{0.55}
-  \pgfmathsetmacro{\lblw}{1.0}
+  \pgfmathsetmacro{\lblw}{1.95}   % $\Delta v = a\,\Delta t$: 55.8pt + node padding
   \pgfmathsetmacro{\stub}{0.35}
   \pgfmathsetmacro{\runout}{0.95}
 
@@ -120,7 +129,8 @@
   % Filled before anything is drawn, so the axes and the graph sit on top of
   % the hatching rather than under it. Its four sides are the v axis, the t
   % axis, the ordinate at Delta t and the graph -- all drawn below in their own
-  % right, so this path only fills and never strokes.
+  % right (the ordinate as a guide, the rest at their own weights), so this
+  % path only fills and never strokes.
   \path[area] (O) -- (Bt) -- (B) -- (A) -- cycle;
 
   % --- axes ------------------------------------------------------------------
@@ -132,7 +142,57 @@
   % then guaranteed collinear with the segment being measured, which is the
   % one thing a reader checks by eye.
   \draw[graph] (A) -- ($(A)!1.15!(B)$);
-  \draw[graph] (Bt) -- (B);
+  \draw[guide] (Bt) -- (B);
+
+  % The slope is the one thing the line means, so it is lettered plainly across
+  % the top and tied to the line by a pen stroke, rather than set along the line
+  % itself: a tilted label costs the reader more than following an arrow does.
+  % Hung from the top of the v axis, so it rises and falls with the picture, and
+  % pinned by its left edge one clearance in from the axis. Centring it instead
+  % makes the clearance depend on the label's own width -- which is not fixed:
+  % the same fragment sets wider in the book's body size than in the standalone
+  % export, and a centred label duly reached back over the v axis there.
+  \node (slope) [anchor=north west] at (\gap,\vf+\runout)
+        {$\dfrac{\Delta v}{\Delta t} = a$ \ (slope $=$ acceleration)};
+
+  % Both ends are pinned to things that do not move: an offset from the label's
+  % bottom-left corner, which is fixed because the label is anchored there, and
+  % a point ON the segment, named the way the graph itself is. Hanging it off
+  % .south instead would tie the stroke to the label's centre, and so to its
+  % width -- the one thing that is not fixed between the book and the export.
+  %
+  % It leaves from the label's own baseline -- .base west is the text baseline
+  % at the pinned left edge, so the stroke starts under the lettering the way a
+  % pen would, not from the corner of an invisible box -- and runs down-right at
+  % about 45 degrees onto the middle of the segment. Leaving steeper than it
+  % arrives is what bows it; a vertical drop with a hook at the end reads as a
+  % different gesture entirely.
+  % shorten keeps the barb off the heavy stroke rather than merging into it.
+  % Placed a fraction of the way along the label's own baseline, so it sits
+  % under the "=" at any body size: the label scales as a whole, so a
+  % proportion of its width tracks a given character in it. (That is not the
+  % width-dependence the label's own anchoring avoids -- clearance from a fixed
+  % object must not follow the width, but a point meant to track the lettering
+  % must.)
+  %
+  % The stroke drops, turns back up, then drops again into the line. That is one
+  % cubic Bezier -- all `to[out/in]' ever draws -- and the three phases come from
+  % two independent things:
+  %
+  %   in=105   puts the second control point on the far side of the chord from
+  %            the first, which is what lets the curve inflect at all. A shallow
+  %            `in' (150, 180) leaves both control points on the same side and
+  %            the curve can only bow, however it is otherwise tuned.
+  %   looseness=3  lengthens both control arms. Past about 2 they overshoot, and
+  %            the overshoot is the turn back: the curve climbs again for a
+  %            stretch instead of merely flattening. The same angles give a
+  %            smooth S with no reversal at about 1.2, and a plain bow below 1.
+  %
+  % So the shape is in the tangents, not in a decoration -- a snake would repeat
+  % the wobble, which reads as noise rather than one deliberate turn.
+  \draw[soft, shorten >=2pt]
+        ($ (slope.base west)!0.20!(slope.base east) + (0,-0.15) $)
+        to[out=-85, in=105, looseness=3.0] ($(A)!0.50!(B)$);
 
   % --- construction levels ---------------------------------------------------
   \draw[level] (\xleft-\stub,\vz) -- (\xlev,\vz);
@@ -142,7 +202,7 @@
   % --- dimensions ------------------------------------------------------------
   \draw[dim] (\xleft,0)  -- node[left]  {$v_0$} (\xleft,\vz);
   \draw[dim] (\xdim,0)   -- node[right] {$v_0$} (\xdim,\vz);
-  \draw[dim] (\xdim,\vz) -- node[right] {$a\,\Delta t$} (\xdim,\vf);
+  \draw[dim] (\xdim,\vz) -- node[right] {$\Delta v = a\,\Delta t$} (\xdim,\vf);
   \draw[dim] (\xtot,0)   -- node[right] {$v_f = v_0 + a\,\Delta t$} (\xtot,\vf);
 
   % The base of the trapezoid. Set below the axis so it is read as the width
@@ -150,19 +210,20 @@
   \node[below=3pt] at (\T/2,0) {$\Delta t$};
 
   % --- what the area comes to ------------------------------------------------
-  % Two lines in one node rather than an aligned environment: the fragment has
-  % to typeset under this directory's minimal standalone wrapper as well as
-  % inside the book, and the wrapper loads no math package beyond unicode-math.
-  % \phantom carries the second line's "=" under the first.
+  % An aligned, so the second line's "=" sits under the first by construction.
+  % (An earlier version faked that with \phantom, on the belief that the
+  % standalone wrapper had no amsmath -- it does, via unicode-math, and now
+  % says so explicitly.)
   %
   % Anchored by its top-left corner rather than centred on a tuned offset. That
   % corner is where the pointer lands, so anchoring it means re-setting the
   % expression wider or taller can no longer drag the target around -- and
   % since the corner is at positive x by construction, the pointer can never be
   % left having to cross the v axis to reach it.
-  \node (area) [align=left, anchor=north west] at (0.30*\T,-0.90) {%
-    $\Delta x = v_0\,\Delta t + \frac{1}{2}(a\,\Delta t)(\Delta t)$ \\[2pt]
-    $\phantom{\Delta x} = v_0\,\Delta t + \frac{1}{2}a\,(\Delta t)^2$};
+  \node (area) [anchor=north west] at (0.30*\T,-0.90) {$\begin{aligned}
+    \Delta x &= v_0\,\Delta t + \tfrac{1}{2}(a\,\Delta t)(\Delta t) \\
+             &= v_0\,\Delta t + \tfrac{1}{2}a\,(\Delta t)^2
+  \end{aligned}$};
 
   % Leaves the area heading straight down and arrives heading down-and-left, so
   % the two tangents disagree and the curve has to bow to join them -- a single
