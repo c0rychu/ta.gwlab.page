@@ -43,11 +43,12 @@ site: $(TAILWIND)
 # flags deliberately live there and not here, so the CI action gets them too.
 # -cd then moves latexmk into each file's own directory, which is what lets a
 # chapter subfile resolve ../book.tex.
-# Build order matters: book.tex first, so that book.aux exists next to the
-# chapters. Each chapter reads it via xr-hyper, which is what makes a reference
-# into another chapter resolve — and stay clickable — in a standalone chapter
-# PDF. Building in-tree rather than with -outdir is what keeps that .aux
-# findable, and matches what the CI action does before its collect step.
+# Build order matters: book.tex first, so that latex/build/book.aux exists by
+# the time the chapters are typeset. Each chapter reads it via xr-hyper, which
+# is what makes a reference into another chapter resolve — and stay clickable —
+# in a standalone chapter PDF. The intermediate files go to build/ ($aux_dir in
+# .latexmkrc) rather than next to the sources; the PDFs still land in latex/ and
+# latex/chapters, which is what the collect step below and the CI action expect.
 latex:
 	@if [ ! -d latex ]; then echo "no latex/ directory — skipping"; exit 0; fi; \
 	if [ -d latex/fig ] \
@@ -80,9 +81,11 @@ latex:
 # into other chapters. `make clean` removes them.
 
 ## fig: regenerate figure assets (TikZ exports, SVG conversion, plots)
-# Figure generation is deliberately NOT a prerequisite of `latex`: every asset
-# is committed, so the document build needs none of these tools and CI can
-# typeset without them. Run this after changing a figure source.
+# Figure generation is deliberately NOT a prerequisite of `latex`: it needs
+# matplotlib, rsvg-convert and LuaLaTeX, and wiring it in would put all three
+# between you and a one-line typo fix. The `latex` target only checks that the
+# assets are present and tells you to run this; CI runs it as its own step.
+# Run this after changing a figure source.
 # See latex/fig/Makefile; each subdirectory has its own for working on one kind.
 fig:
 	@[ -d latex/fig ] || { echo "no latex/fig — skipping"; exit 0; }; \
@@ -107,20 +110,35 @@ serve: site
 	@echo "serving $(DIST)/ at http://localhost:$(PORT)  (re-run 'make site' after edits)"
 	@python3 -m http.server $(PORT) -d $(DIST)
 
-## clean: remove the LaTeX aux files left in latex/ (keeps dist/)
+## clean: remove the LaTeX build files left in latex/ (keeps dist/)
 # dist/ is left alone: it is gitignored, harmless to keep, and throwing it away
 # forces a full site rebuild for no benefit. `make distclean` removes it.
+#
+# The *.pdf line is what makes this work after an interrupted `make latex`.
+# latexmk writes each PDF next to its source, and the recipe above only moves
+# them into dist/notes once every file has been typeset -- so a Ctrl-C partway
+# through strands the finished ones here. Exactly the two directories that hold
+# document roots, and at depth 1 -- latex/fig/**/*.pdf is figure artwork, see
+# the note under the recipe.
+#
+# latex/fig/tikz still needs the old per-extension sweep: it drives the engine
+# itself rather than latexmk, so .latexmkrc's $aux_dir never reaches it.
 clean:
-	@for d in latex latex/chapters latex/fig/tikz; do \
+	@rm -rf latex/build latex/chapters/build
+	@rm -f latex/*.pdf latex/chapters/*.pdf
+	@for d in latex/fig/tikz; do \
 	  [ -d "$$d" ] || continue; \
-	  rm -f $$d/*.aux $$d/*.log $$d/*.fls $$d/*.fdb_latexmk $$d/*.out $$d/*.toc \
-	        $$d/*.bbl $$d/*.bcf $$d/*.blg $$d/*.run.xml $$d/*.synctex.gz \
-	        $$d/*.minted $$d/*.lof $$d/*.lot $$d/*.xdv; \
-	  rm -rf $$d/_minted; \
+	  rm -f $$d/*.aux $$d/*.log $$d/*.fls $$d/*.fdb_latexmk $$d/*.out \
+	        $$d/*.synctex.gz $$d/*.xdv; \
 	done
-# Figure assets are NOT touched here: the exported TikZ PDFs and everything in
-# latex/fig/ are committed files that CI depends on. `make -C latex/fig clean`
-# will delete them — that is for regenerating deliberately, not for tidying up.
+# Figure assets are NOT touched here, and not because they are tracked — they
+# are gitignored, one .gitignore per latex/fig/ subdirectory. It is that
+# regenerating them needs matplotlib, rsvg-convert and LuaLaTeX, none of which
+# the document build otherwise requires, so deleting them to tidy up would turn
+# the next `make latex` into a toolchain install. CI regenerates plots and svg
+# before typesetting for that same reason; the TikZ exports it skips entirely,
+# since the book \inputs the .tex via \tikzfig and never the exported PDF.
+# `make -C latex/fig clean` is the deliberate way to discard them.
 
 ## distclean: also remove dist/ and the downloaded toolchain
 distclean: clean

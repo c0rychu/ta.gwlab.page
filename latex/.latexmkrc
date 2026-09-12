@@ -20,3 +20,15 @@ $bibtex_use = 2;   # run biber, and clean its output on `latexmk -c`
 # glob patterns rather than fixed names.
 $clean_ext .= ' bbl run.xml bcf %R.synctex.gz';
 push @generated_exts, 'config.minted', 'data.minted', 'message.minted';
+
+# Keep the intermediate files out of the source directories: everything above
+# (plus minted's _minted/) is written here instead. The PDF still lands next to
+# its source, so the Makefile and the CI action collect it exactly as before.
+# Relative, so it resolves per-directory under latexmk -cd: latex/build for the
+# book, latex/chapters/build for the chapters.
+#
+# The chapters' \externaldocument path has to agree with this name -- see the
+# \IfFileExists line at the top of each one. Renaming this directory without
+# renaming that path breaks cross-chapter references *silently*, since the
+# \IfFileExists guard turns a missing book.aux into a no-op rather than an error.
+$aux_dir = 'build';

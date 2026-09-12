@@ -2,9 +2,10 @@
 %% Compilable on its own:  make latex CH=ch06-geometric-optics
 \documentclass[../book.tex]{subfiles}
 % Resolve (and link) references into other chapters when the book has been
-% built in this directory. Ignored entirely by the whole-book build, and a
-% silent no-op if book.aux is absent.
-\IfFileExists{../book.aux}{\externaldocument{../book}}{}
+% built in this directory; latexmk keeps its .aux in build/, see .latexmkrc.
+% Ignored entirely by the whole-book build, and a silent no-op if book.aux is
+% absent -- so a stale path here costs cross-references with no error.
+\IfFileExists{../build/book.aux}{\externaldocument{../build/book}}{}
 
 \begin{document}
 

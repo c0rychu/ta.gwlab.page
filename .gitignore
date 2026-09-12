@@ -18,23 +18,21 @@ dist/
 # Scratch space for experiments — never part of a build
 scratch/
 
-# LaTeX build junk
+# LaTeX build junk. latexmk writes all of it into build/ ($aux_dir in
+# latex/.latexmkrc), so one rule covers the book and every chapter.
+build/
+
+# latex/fig/tikz drives the engine directly rather than through latexmk, so its
+# intermediates land next to the sources and still need naming one by one.
 *.aux
 *.fdb_latexmk
 *.fls
 *.log
 *.out
 *.synctex.gz
-*.toc
-*.bbl
-*.bcf
-*.blg
-*.run.xml
+*.xdv
 # biber leaves this behind when a run is interrupted
 *.bcf-SAVE-ERROR
-*.xdv
-*.lof
-*.lot
 
 # minted 3 writes these next to the document, named after a hash of it
 *.minted
