@@ -56,6 +56,45 @@ where
 
 
 \section{The electric field}
+Instead of having a Coulomb force between two charges $Q$ and $q$, we can have a different interpretation: The charge $Q$ does not interact with charge $q$ directly. Instead, the charge $Q$ creates an \emph{electric field} $\mathbf{E}(\mathbf{r})$ around it, and the charge $q$ at position $\mathbf{r}$ feels a force from the electric field $\mathbf{E}(\mathbf{r})$ locally at $\mathbf{r}$. 
+
+The electric field $\mathbf{E}$ is a \emph{vector field}. We may think of a vector field as: ``at every point in the space $\mathbf{r}$, there is a vector $\mathbf{V}(\mathbf{r})$ (a little arrow) attached to that point $\mathbf{r}$.'' Because of that, a vector field $\mathbf{V}(\mathbf{r})$ is a function of location, i.e., space coordinate, $\mathbf{r}=(x,y,z)$.
+
+\begin{figure}[htbp]
+  \centering
+  \tikzfig{ch01-coulomb-law.tex}
+  \caption{Same as \autoref{fig:coulomb-law}}
+  \label{fig:coulomb-law-E-field}
+\end{figure}
+
+To make our two-charge example more explicit, we can refer to \autoref{fig:coulomb-law-E-field}. Here, charge $Q$ creates an electric field:
+\begin{align}
+    \label{eq:coulomb-law-E-field}
+    \mathbf{E}(\mathbf{r})
+    &=
+    k_e 
+    \frac{Q}{\abs{\mathbf{R}}^2}
+    \hat{\mathbf{R}}
+    \\
+    &=
+    k_e 
+    \frac{Q}{\abs{\mathbf{r} - \mathbf{r}'}^2}
+    \frac{\mathbf{r} - \mathbf{r}'}{\abs{\mathbf{r} - \mathbf{r}'}}
+    \;,
+\end{align}
+and change $q$ feels the force
+\begin{align}
+    \mathbf{F}(\mathbf{r})
+    &=
+    q \mathbf{E}(\mathbf{r})
+    \\
+    &=
+    k_e 
+    \frac{Q \, q}{\abs{\mathbf{R}}^2}
+    \hat{\mathbf{R}}
+    \;.
+\end{align}
+Quantitatively, this is the same as the Coulomb force in the static case, and it seems the $\mathbf{E}$ field is just a mathematical tool to facilitate calculation. However, this is in fact a deep breakthrough in theory, which later on leads to the prediction of the existence of electromagnetic waves.
 
 
 \section{Gauss's law}
