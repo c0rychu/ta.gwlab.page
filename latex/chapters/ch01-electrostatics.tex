@@ -111,7 +111,7 @@ Quantitatively, this is the same as the Coulomb force in the static case, and it
 \end{figure}
 
 \begin{gwbox}[Gauss's law]
-The total electric flux $\Phi_E$ through any \emph{closed} surface $S$, known as a Gaussian surface, equals the total charge enclosed by $S$ divided by $\epsilon_0$:
+The total electric flux $\Phi_E$ through any \emph{closed} surface $S$, known as a Gaussian surface, equals the total charge $Q_{\mathrm{enc}}$ enclosed by $S$ divided by $\epsilon_0$:
 \begin{keyeq}
     \label{eq:gauss-law}
     \Phi_E
@@ -129,22 +129,82 @@ The total electric flux $\Phi_E$ through any \emph{closed} surface $S$, known as
 \end{itemize}
 \end{gwbox}
 
-The law holds for a closed surface of any shape and size.
+Since Gauss's law holds for a closed Gaussian surface of any shape, a clever choice of the surface is the key to simplifying the problem.
 
 \begin{figure}[htbp]
     \centering
     \tikzfig{ch01-gauss-surface-sphere.tex}
-    \caption{A spherical Gaussian surface $S'$ of radius $R$ centred on the
+    \caption{A spherical Gaussian surface $S'$ of radius $R$ centered on the
     charge $Q$. Everywhere on $S'$, $\mathbf{E}$ is parallel to $d\mathbf{A}$
     and has the same magnitude.}
     \label{fig:gauss-surface-sphere}
 \end{figure}
 
+\begin{align}
+    \Phi_E
+    &=
+    \frac{Q_{\mathrm{enc}}}{\epsilon_0}
+    \\
+    \Rightarrow
+    E A
+    &=
+    E (4 \pi R^2)
+    =
+    \frac{Q_{\mathrm{enc}}}{\epsilon_0}
+    \\
+    \Rightarrow
+    E
+    &=
+    \frac{1}{4 \pi \epsilon_0}
+    \frac{ Q_{\mathrm{enc}} }{R^2}
+\end{align}
+
+For a pair of infinitely large parallel plates in vacuum:
+\begin{align}
+    \Phi_E
+    &=
+    E A
+    =
+    \frac{\sigma A}{\epsilon_0}
+    \\
+    \Rightarrow
+    E
+    &=
+    \frac{\sigma}{\epsilon_0}
+    \;,
+\end{align}
+where $\sigma \equiv \tfrac{Q}{A}$ is the surface charge density.
 
 \section{Electric potential energy}
+\begin{align}
+    W = \mathbf{F} \cdot \Delta \mathbf{ x}
+\end{align}
+\begin{align}
+    \Delta V = \mathbf{E} \cdot \Delta \mathbf{ x}
+\end{align}
+
+For a point charge $Q$:
+\begin{align}
+    V =
+    \frac{1}{4 \pi \epsilon_0}
+    \frac{Q}{R}
+    \quad
+    (\text{when choosing $V=0$ at $R \rightarrow \infty$})
+\end{align}
 
 
 \section{Capacitance and dielectrics}
+\begin{align}
+    C \equiv
+    \frac{\Delta Q}{\Delta V}
+\end{align}
+For a parallel-plate Capacitor,
+\begin{align}
+    C =
+    \epsilon
+    \frac{A}{d}
+\end{align}
+
 
 
 \chapterbib
