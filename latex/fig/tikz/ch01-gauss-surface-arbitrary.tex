@@ -1,0 +1,130 @@
+% Gauss's law on an arbitrary closed surface S around a charge Q: E meets dA at
+% an angle theta that varies from point to point, yet every field line crosses
+% S, so the flux is still Q/epsilon_0. The companion figure,
+% ch01-gauss-surface-sphere.tex, shows the same charge inside a sphere.
+%
+% Pulled in with \tikzfig{ch01-gauss-surface-arbitrary.tex}. A fragment, not a
+% document -- one tikzpicture, no preamble -- so it inherits the fonts of
+% whatever \inputs it. The charge style matches ch01-coulomb-law.tex, so Q
+% looks the same in every figure of the chapter.
+%
+% Field lines and E are drawn so they cannot be mistaken for each other:
+%   - a field line is a thin grey line from Q, with a small arrowhead partway
+%     along to give its sense and none at its end -- it is a curve through
+%     space, not a vector with a length;
+%   - E is a black arrow that starts AT a point and whose length is its size.
+%
+% Every field line must cross S exactly once. That holds only while S is
+% star-shaped as seen from Q -- keep it so if the blob is ever redrawn.
+%
+% The marked point on S is a joint of the to[out,in] path, where the tangent is
+% the `out' angle by definition -- so the outward normal (to the right of the
+% counter-clockwise travel) is exactly out - 90, with nothing to compute. E is
+% aimed along (P) - (Q) with `let', so theta is whatever the geometry says it
+% is, and the arc marking it follows if the blob is edited.
+%
+% Needs the arrows.meta and calc libraries, loaded in the preamble of
+% gwbook.cls and _wrapper.tex -- see the note in ch01-coulomb-law.tex.
+\begin{tikzpicture}[
+    % The figsize knob: distances scale, lettering and node sizes do not.
+    scale=1.3,
+    >={Latex},
+    charge/.style  = {circle, draw, fill=white, line width=0.9pt,
+                      minimum size=12pt, inner sep=0pt, outer sep=2.5pt,
+                      font=\normalsize},
+    fieldline/.style = {line width=0.5pt, black!50},
+    % The sense marker on a field line: small and narrow, so it reads as a
+    % direction and not as the tip of a vector.
+    sense/.style   = {-{Stealth[length=4pt, width=2.6pt]}},
+    surface/.style = {dash pattern=on 4pt off 2pt, line width=1.1pt},
+    % The curly pointer from a name to what it names: an open V of two strokes
+    % (Straight Barb, 60 deg included angle) and a round cap, as in
+    % cha-vt-diagram-main.tex -- a pen mark, not a vector.
+    pointer/.style = {-{Straight Barb[round, length=4pt, width=4.6pt]},
+                      line width=0.6pt, line cap=round, line join=round,
+                      % Stop short of the target, so the tip points at it
+                      % rather than touching it; shorten < does the same at
+                      % the name end.
+                      shorten >=3pt, shorten <=1pt},
+    % Sans, so a note reads as an annotation rather than as part of the text
+    % or the maths. (The S label sets the same font inline.)
+    note/.style    = {font=\sffamily\scriptsize},
+    % No white halo: no vector crosses a field line, and a halo would eat
+    % into the base of whichever vector shares its starting point.
+    vec/.style     = {->, line width=0.9pt},
+    % The patch of surface that dA stands for.
+    patch/.style   = {line width=2.6pt, line cap=butt},
+    angle/.style   = {line width=0.6pt},
+    % For labels that sit among the field lines.
+    backed/.style  = {fill=white, inner sep=1.5pt},
+  ]
+
+  \pgfmathsetmacro{\lineR}{2.45}  % how far every field line runs from Q;
+                                  % must clear S (max radius ~2.1)
+  \pgfmathsetmacro{\nameR}{4.2}   % ... except the named 30 deg line, which
+                                  % runs on to hold its name (about 2cm at the
+                                  % book's 12pt) clear of S
+  \pgfmathsetmacro{\senseR}{1.3}  % where along a line its sense marker sits:
+                                  % inside S (min radius ~1.45, at the dent)
+                                  % everywhere, and well clear of Q
+  \pgfmathsetmacro{\alen}{1.15}   % length of dA
+  \pgfmathsetmacro{\elen}{1.45}   % length of E
+  \pgfmathsetmacro{\half}{0.16}   % half-width of the dA patch
+
+  \node[charge] (Q) at (0,0) {$+$};
+  % Two pieces per line: the first ends in the sense marker, the second
+  % carries on from the marker's tip with no head of its own.
+  \foreach \t in {0,30,...,330} {
+    \pgfmathsetmacro{\len}{\t==30 ? \nameR : \lineR}
+    \draw[fieldline, sense] (Q.\t) -- (\t:\senseR);
+    \draw[fieldline] (\t:\senseR) -- (\t:\len);
+  }
+
+  % The field-line name is set along the 30 deg line itself, on the run past S
+  % (which it crosses at radius ~1.95).
+  \path (30:2.05) -- (30:\nameR)
+    node[midway, sloped, above, inner sep=1.5pt, note] {electric field line};
+
+  % Counter-clockwise, and smooth at every joint: each `out' is the previous
+  % `in' + 180. The dent on top is what makes the shape read as arbitrary.
+  \draw[surface]
+    (1.93,-0.52) to[out=115, in=-20]
+    (1.0,1.85)   to[out=160, in=0]
+    (0.05,1.45)  to[out=180, in=-20]
+    (-1.0,1.8)   to[out=160, in=90]
+    % Named for the S pointer: a point between the 120 and 150 deg lines.
+    node[pos=0.25, coordinate] (Sa) {}
+    (-1.85,0.0)  to[out=270, in=160]
+    (-0.8,-1.3)  to[out=-20, in=190]
+    (0.6,-1.5)   to[out=10,  in=295]
+    cycle;
+
+  % Set above the tips of the 90 and 120 deg lines, which it would otherwise
+  % run into.
+  \node[anchor=base west] (Slbl) at (-2.9,2.75)
+    {$S$ {\sffamily\scriptsize (Gaussian surface)}};
+  \draw[pointer] ([xshift=4pt]Slbl.south west) to[out=-80, in=170] (Sa);
+
+  \node[backed, anchor=north west] at (Q.-45) {$Q$};
+
+  % The marked point is the (1.93,-0.52) joint, where the path starts:
+  % tangent 115, normal 25. It lies at -15 deg from Q, midway between two
+  % field lines, so E (which is radial) does not sit on top of one; and it is
+  % on the right edge, so E, dA and theta open into the empty space there
+  % rather than into the field lines.
+  \coordinate (P) at (1.93,-0.52);
+  \pgfmathsetmacro{\tang}{115}
+  \pgfmathsetmacro{\nrm}{\tang-90}
+
+  \draw[vec] (P) -- ++(\nrm:\alen) node[above right=-1pt] {$d\mathbf{A}$};
+  \draw[vec] let \p1 = ($(P)-(Q)$), \n1 = {atan2(\y1,\x1)} in
+    (P) -- ++(\n1:\elen) node[below right=-1pt] {$\mathbf{E}$};
+
+  % theta, from dA round to E.
+  \draw[angle] let \p1 = ($(P)-(Q)$), \n1 = {atan2(\y1,\x1)} in
+    ($(P)+(\nrm:0.7)$) arc[start angle=\nrm, end angle=\n1, radius=0.7]
+    ($(P)+({(\nrm+\n1)/2}:0.95)$) node {$\theta$};
+
+  \draw[patch] ($(P)+(\tang:\half)$) -- ($(P)-(\tang:\half)$);
+
+\end{tikzpicture}

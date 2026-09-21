@@ -1,0 +1,97 @@
+% Gauss's law on a sphere S' of radius R centred on a charge Q: E is parallel
+% to dA everywhere and has the same size everywhere, which is what makes the
+% flux integral trivial. The companion figure, ch01-gauss-surface-arbitrary.tex,
+% shows the same charge inside an arbitrary surface S.
+%
+% Pulled in with \tikzfig{ch01-gauss-surface-sphere.tex}. A fragment, not a
+% document -- one tikzpicture, no preamble -- so it inherits the fonts of
+% whatever \inputs it. Styles match the companion figure, so the two read as a
+% pair.
+%
+% Only E is drawn, as sampled on S' -- no field lines: equal arrows all round
+% is the whole point of the sphere, and field lines would only repeat them.
+%
+% Layout: the eight E arrows sit at multiples of 45 deg, and everything that
+% is lettered goes in the gaps between them, one thing per quadrant so the
+% picture stays balanced --
+%   upper right  E and dA, side by side at 45 deg (the one claim);
+%   upper left   the name S', pointed at the sphere;
+%   lower left   the radius R, inside the sphere;
+%   right        the name Q, beside the charge.
+% Each gap is named by its angle below, so a label can be moved to another
+% quadrant by changing one number.
+%
+% Needs the arrows.meta and calc libraries, loaded in the preamble of
+% gwbook.cls and _wrapper.tex -- see the note in ch01-coulomb-law.tex.
+\begin{tikzpicture}[
+    % The figsize knob: distances scale, lettering and node sizes do not.
+    scale=1.0,
+    >={Latex},
+    charge/.style  = {circle, draw, fill=white, line width=0.9pt,
+                      minimum size=12pt, inner sep=0pt, outer sep=2.5pt,
+                      font=\normalsize},
+    surface/.style = {line width=1.1pt},
+    % See ch01-gauss-surface-arbitrary.tex.
+    pointer/.style = {-{Straight Barb[round, length=4pt, width=4.6pt]},
+                      line width=0.6pt, line cap=round, line join=round,
+                      shorten >=3pt, shorten <=1pt},
+    vec/.style     = {->, line width=0.9pt},
+    % A measurement, not a field: lighter than the vectors, but with a head of
+    % the same family so it does not look like an afterthought.
+    % Not `radius': that would shadow the key circle[radius=...] needs, and
+    % the sphere silently vanishes.
+    radline/.style = {-{Latex[length=5pt, width=3.6pt]}, line width=0.7pt},
+    % The patch of surface that dA stands for.
+    patch/.style   = {line width=2.6pt, line cap=butt},
+  ]
+
+  \pgfmathsetmacro{\R}{1.7}       % the sphere
+  \pgfmathsetmacro{\elen}{0.95}   % length of E
+  \pgfmathsetmacro{\alen}{0.7}    % length of dA
+  \pgfmathsetmacro{\half}{0.18}   % half-width of the dA patch
+  \pgfmathsetmacro{\off}{2.8}     % pt; how far E and dA stand off their
+                                  % shared normal, each to its own side
+  % Where each lettered thing goes -- see the layout note above.
+  \pgfmathsetmacro{\a}{45}        % E and dA
+  \pgfmathsetmacro{\sname}{112.5} % S'
+  \pgfmathsetmacro{\rdir}{202.5}  % R
+
+  \node[charge] (Q) at (0,0) {$+$};
+  \node[anchor=west, inner sep=2pt] at (Q.east) {$Q$};
+
+  % E sampled on S': same length at every point, every one along the normal.
+  % The one at \a is set aside to make room for dA beside it.
+  \foreach \t in {0,45,...,315} {
+    \ifdim \t pt=\a pt
+      \draw[vec] ($(\t:\R)+(\t+90:\off pt)$) -- ++(\t:\elen)
+        node[above left=-1pt] {$\mathbf{E}$};
+    \else
+      \draw[vec] (\t:\R) -- (\t:\R+\elen);
+    \fi
+  }
+  \draw[vec] ($(\a:\R)+(\a-90:\off pt)$) -- ++(\a:\alen)
+    node[below right=-1pt] {$d\mathbf{A}$};
+
+  % The sphere's dashes are fitted to the circle -- 48 periods, 6 between
+  % neighbouring arrows, phase starting mid-dash at 0 deg -- so every arrow
+  % stands on a dash rather than in a gap. The period stays near the 6pt of
+  % the dashes on S in the companion figure; keep the count a multiple of 8.
+  % (dash pattern does not evaluate math, hence the macros.)
+  \pgfmathsetmacro{\per}{2*pi*\R/48 * 28.4527559}   % cm -> pt
+  \pgfmathsetmacro{\don}{\per*2/3}
+  \pgfmathsetmacro{\doff}{\per/3}
+  \pgfmathsetmacro{\dph}{\don/2}
+  \draw[surface, dash pattern=on \don pt off \doff pt, dash phase=\dph pt]
+    (0,0) circle[radius=\R];
+  \draw[patch] ($(\a:\R)+(\a+90:\half)$) -- ($(\a:\R)+(\a-90:\half)$);
+
+  % The radius, from Q's ring to S'. Lettered on the side away from Q's name.
+  \draw[radline] (Q.\rdir) -- node[auto, inner sep=2pt] {$R$} (\rdir:\R);
+
+  % S': the name sits out in its gap, a little round from the middle of it,
+  % and the pointer swings back to land on the sphere mid-gap -- a gesture
+  % rather than a radial tick, and clear of the arrows either side.
+  \node (Slbl) at (\sname+10:\R+1.15) {$S'$};
+  \draw[pointer] (Slbl.south) to[out=-85, in=160] (\sname-4:\R);
+
+\end{tikzpicture}

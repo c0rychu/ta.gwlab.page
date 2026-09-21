@@ -20,6 +20,10 @@
   Extension=.otf, UprightFont=*-regular, ItalicFont=*-italic,
   BoldFont=*-bold, BoldItalicFont=*-bolditalic]
 \setmathfont{texgyreschola-math.otf}
+% Same sans as gwbook.cls, for the figure labels that ask for \sffamily.
+\setsansfont{texgyreheros}[
+  Extension=.otf, UprightFont=*-regular, ItalicFont=*-italic,
+  BoldFont=*-bold, BoldItalicFont=*-bolditalic, Scale=MatchLowercase]
 
 \usepackage{tikz}
 % Same list, and for the same reason, as the preamble of gwbook.cls -- keep the

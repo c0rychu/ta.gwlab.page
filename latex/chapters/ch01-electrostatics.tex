@@ -99,6 +99,47 @@ Quantitatively, this is the same as the Coulomb force in the static case, and it
 
 \section{Gauss's law}
 
+\begin{figure}[htbp]
+    \centering
+    \tikzfig{ch01-gauss-surface-arbitrary.tex}
+    \caption{A Gaussian surface $S$ of arbitrary shape enclosing the charge $Q$.
+    At each point of $S$, the electric field $\mathbf{E}$ meets the area element
+    $d\mathbf{A}$ at an angle $\theta$ that varies over the surface. Even so,
+    every electric field line crosses $S$, so the total flux through $S$ is
+    $Q/\epsilon_0$.}
+    \label{fig:gauss-surface-arbitrary}
+\end{figure}
+
+\begin{gwbox}[Gauss's law]
+The total electric flux $\Phi_E$ through any \emph{closed} surface $S$, known as a Gaussian surface, equals the total charge enclosed by $S$ divided by $\epsilon_0$:
+\begin{keyeq}
+    \label{eq:gauss-law}
+    \Phi_E
+    =
+    \oint_S \mathbf{E} \cdot d\mathbf{A}
+    =
+    \frac{Q_{\mathrm{enc}}}{\epsilon_0}
+    \;.
+\end{keyeq}
+\begin{itemize}
+    \item
+        The surface integral $\oint_S$ means ``add up over the whole closed surface''. On each small patch, $d\mathbf{A}$ points outward, and $\mathbf{E} \cdot d\mathbf{A} = E \, dA \cos\theta$ counts only the part of $\mathbf{E}$ that passes through the patch.
+    \item
+        Only the charge \emph{inside} $S$ counts. A charge outside sends as many field lines in through $S$ as out, so the net flux due to an outside charge is zero.
+\end{itemize}
+\end{gwbox}
+
+The law holds for a closed surface of any shape and size.
+
+\begin{figure}[htbp]
+    \centering
+    \tikzfig{ch01-gauss-surface-sphere.tex}
+    \caption{A spherical Gaussian surface $S'$ of radius $R$ centred on the
+    charge $Q$. Everywhere on $S'$, $\mathbf{E}$ is parallel to $d\mathbf{A}$
+    and has the same magnitude.}
+    \label{fig:gauss-surface-sphere}
+\end{figure}
+
 
 \section{Electric potential energy}
 
